@@ -1,5 +1,10 @@
-const { AppointmentStatus, AppointmentType } = require('../enums');
-const { Money, SymptomDetail, Prescription, Message } = require('../value-objects');
+const { AppointmentStatus, AppointmentType } = require("../enums");
+const {
+  Money,
+  SymptomDetail,
+  Prescription,
+  Message,
+} = require("../value_objects");
 
 class Appointment {
   constructor({
@@ -11,14 +16,14 @@ class Appointment {
     durationMinutes = 30,
     status = AppointmentStatus.PENDING,
     calculatedFee = 0,
-    symptoms = '',
-    doctorNotes = '',
+    symptoms = "",
+    doctorNotes = "",
     createdAt = new Date(),
     symptomDetails = [],
     prescriptions = [],
-    messages = []
+    messages = [],
   }) {
-    this.id = id || require('crypto').randomUUID();
+    this.id = id || require("crypto").randomUUID();
     this.patientId = patientId;
     this.doctorId = doctorId;
     this.type = type;
@@ -26,20 +31,21 @@ class Appointment {
     this.durationMinutes = Number(durationMinutes);
     this.status = status;
     this.calculatedFee = new Money(calculatedFee);
-    this.symptoms = symptoms?.trim() || '';
-    this.doctorNotes = doctorNotes?.trim() || '';
-    this.createdAt = createdAt instanceof Date ? createdAt : new Date(createdAt);
-    this.symptomDetails = symptomDetails.map(s => new SymptomDetail(s));
-    this.prescriptions = prescriptions.map(p => new Prescription(p));
-    this.messages = messages.map(m => new Message(m));
+    this.symptoms = symptoms?.trim() || "";
+    this.doctorNotes = doctorNotes?.trim() || "";
+    this.createdAt =
+      createdAt instanceof Date ? createdAt : new Date(createdAt);
+    this.symptomDetails = symptomDetails.map((s) => new SymptomDetail(s));
+    this.prescriptions = prescriptions.map((p) => new Prescription(p));
+    this.messages = messages.map((m) => new Message(m));
   }
 
-  complete(notes = '', prescriptions = []) {
+  complete(notes = "", prescriptions = []) {
     return new Appointment({
       ...this,
       status: AppointmentStatus.COMPLETED,
       doctorNotes: notes,
-      prescriptions: prescriptions.map(p => new Prescription(p))
+      prescriptions: prescriptions.map((p) => new Prescription(p)),
     });
   }
 
@@ -47,17 +53,17 @@ class Appointment {
     return new Appointment({ ...this, status: AppointmentStatus.CANCELLED });
   }
 
-  addMessage(senderId, content, type = 'text', fileUrl = null) {
+  addMessage(senderId, content, type = "text", fileUrl = null) {
     const newMsg = new Message({
       senderId,
       type,
       content,
       fileUrl,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
     return new Appointment({
       ...this,
-      messages: [...this.messages, newMsg]
+      messages: [...this.messages, newMsg],
     });
   }
 }
