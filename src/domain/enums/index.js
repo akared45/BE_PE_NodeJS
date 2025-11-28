@@ -1,0 +1,9 @@
+module.exports = {
+  UserType: require('./UserType'),
+  Gender: require('./Gender'),
+  ContactType: require('./ContactType'),
+  AppointmentType: require('./AppointmentType'),
+  AppointmentStatus: require('./AppointmentStatus'),
+  NotificationType: require('./NotificationType'),
+  MedicalConditionStatus: require('./MedicalConditionStatus')
+};
