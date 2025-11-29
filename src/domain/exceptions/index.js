@@ -4,6 +4,7 @@ const NotFoundException = require('./NotFoundException');
 const ValidationException = require('./ValidationException');
 const BusinessRuleException = require('./BusinessRuleException');
 const NotImplementedException = require('./NotImplementedException')
+const UnauthorizedException = require('./UnauthorizedException');
 
 module.exports = {
   DomainException,
@@ -11,5 +12,6 @@ module.exports = {
   NotFoundException,
   ValidationException,
   BusinessRuleException,
-  NotImplementedException
+  NotImplementedException,
+  UnauthorizedException
 };

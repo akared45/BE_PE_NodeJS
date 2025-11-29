@@ -1,5 +1,5 @@
 const User = require('./User');
-const { Contact, MedicalCondition, Allergy } = require('../value-objects');
+const { Contact, MedicalCondition, Allergy } = require('../value_objects');
 const { UserType } = require('../enums');
 
 class Patient extends User {

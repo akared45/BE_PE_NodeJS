@@ -1,9 +1,8 @@
-class NotImplementedException extends Error {
+const DomainException = require("./DomainException");
+
+class NotImplementedException extends DomainException {
   constructor(methodName = 'Method') {
-    super(`${methodName} is not implemented`);
-    this.name = 'NotImplementedException';
-    this.statusCode = 500;
-    this.code = 'NOT_IMPLEMENTED';
+     super(`${methodName} is not implemented`, 'NOT_IMPLEMENTED', 501);
   }
 }
 

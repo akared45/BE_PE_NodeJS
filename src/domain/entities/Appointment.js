@@ -1,5 +1,5 @@
 const { AppointmentStatus, AppointmentType } = require('../enums');
-const { Money, SymptomDetail, Prescription, Message } = require('../value-objects');
+const { Money, SymptomDetail, Prescription, Message } = require('../value_objects');
 
 class Appointment {
   constructor({
