@@ -8,7 +8,7 @@ class GetDoctorPublicProfileUseCase {
 
   async execute(doctorId) {
     const doctor = await this.userRepository.findById(doctorId);
-    if (!doctor || doctor.role !== 'doctor') throw new NotFoundException('Bác sĩ');
+    if (!doctor || doctor.role !== 'doctor') throw new NotFoundException('Doctor');
 
     return new DoctorPublicResponse(doctor);
   }

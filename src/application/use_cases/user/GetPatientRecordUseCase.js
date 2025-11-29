@@ -13,7 +13,7 @@ class GetPatientRecordUseCase {
       this.userRepository.findById(patientId)
     ]);
 
-    if (!patient || patient.role !== 'patient') throw new NotFoundException('Bệnh nhân');
+    if (!patient || patient.role !== 'patient') throw new NotFoundException('Patient');
     AuthorizationService.requireDoctorCanViewPatient(doctor, patient);
 
     return new PatientRecordResponse(patient);

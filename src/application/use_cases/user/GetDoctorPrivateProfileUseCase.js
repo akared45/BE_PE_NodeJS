@@ -18,7 +18,7 @@ class GetDoctorPrivateProfileUseCase {
     const isOwner = requesterId === doctorId;
     const isAdmin = requester?.role === 'admin';
     if (!isOwner && !isAdmin) {
-      throw new AuthorizationException('Bạn không có quyền xem thông tin chi tiết này');
+      throw new AuthorizationException('You do not have permission to view this detail');
     }
 
     return new DoctorAdminDetailResponse(doctor);
