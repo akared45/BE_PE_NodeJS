@@ -1,6 +1,6 @@
 const Patient = require("../../../domain/entities/Patient");
 const { UserType } = require("../../../domain/enums");
-const RegisterOutputDTO = require("../../dtos/responses/auth/RegisterResponse");
+const RegisterOutputDTO = require("../../dtos/auth/RegisterResponse");
 const { BusinessRuleException } = require("../../../domain/exceptions");
 
 class RegisterPatientUseCase {

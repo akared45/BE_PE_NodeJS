@@ -1,8 +1,12 @@
-const NotImplementedException = require('../exceptions');
+const { NotImplementedException } = require('../exceptions');
 
 class IUserRepository {
     async save(user) {
         throw new NotImplementedException('save');
+    }
+
+    async delete(id) {
+        throw new NotImplementedException('delete');
     }
 
     async findByEmail(email) {
@@ -13,8 +17,12 @@ class IUserRepository {
         throw new NotImplementedException('findById');
     }
 
-    async update(user) {
-        throw new NotImplementedException('update');
+    async findAllByUserType(userType, options = {}) {
+        throw new NotImplementedException('findAllByUserType');
+    }
+
+    async search(keyword) {
+        throw new NotImplementedException('search');
     }
 }
 

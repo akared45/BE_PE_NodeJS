@@ -1,4 +1,4 @@
-const RefreshTokenResponse = require("../../dtos/responses/auth/RefreshTokenResponse");
+const RefreshTokenResponse = require("../../dtos/auth/RefreshTokenResponse");
 const { AuthorizationException } = require("../../../domain/exceptions");
 
 class RefreshTokenUseCase {

@@ -11,13 +11,11 @@ class UserSession {
   isValid() {
     return !this.revoked && new Date() < this.expiresAt;
   }
+  
   revoke() {
     return new UserSession({
-      userId: this.userId,
-      refreshToken: this.refreshToken,
-      expiresAt: this.expiresAt,
-      createdAt: this.createdAt,
-      revoked: true 
+      ...this,
+      revoked: true
     });
   }
 }

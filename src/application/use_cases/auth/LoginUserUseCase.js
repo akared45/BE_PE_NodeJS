@@ -1,5 +1,5 @@
 const UserSession = require("../../../domain/entities/UserSession");
-const LoginOutputDTO = require("../../dtos/responses/auth/LoginResponse");
+const LoginOutputDTO = require("../../dtos/auth/LoginResponse");
 const { AuthorizationException, BusinessRuleException } = require("../../../domain/exceptions");
 
 class LoginUserUseCase {

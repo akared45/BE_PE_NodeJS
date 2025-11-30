@@ -1,4 +1,4 @@
-const { ValidationException } = require('../../../../domain/exceptions');
+const { ValidationException } = require('../../../domain/exceptions');
 
 class RegisterRequest {
   constructor(data) {

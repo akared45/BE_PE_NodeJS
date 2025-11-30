@@ -1,4 +1,4 @@
-const ContactType = require('../enums/ContactType');
+const ContactType = require('../enums');
 
 class Contact {
   constructor({ type, value, isPrimary = false }) {

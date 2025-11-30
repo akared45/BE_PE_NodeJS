@@ -1,3 +1,4 @@
+const { Action, Resource } = require('./Permission');
 module.exports = {
   UserType: require('./UserType'),
   Gender: require('./Gender'),
@@ -5,5 +6,7 @@ module.exports = {
   AppointmentType: require('./AppointmentType'),
   AppointmentStatus: require('./AppointmentStatus'),
   NotificationType: require('./NotificationType'),
-  MedicalConditionStatus: require('./MedicalConditionStatus')
+  MedicalConditionStatus: require('./MedicalConditionStatus'),
+  Action,
+  Resource
 };

@@ -1,6 +1,6 @@
-const RegisterRequest = require("../../application/dtos/requests/auth/RegisterRequest");
-const LoginRequest = require("../../application/dtos/requests/auth/LoginRequest");
-const RefreshTokenRequest = require("../../application/dtos/requests/auth/RefreshTokenRequest");
+const RegisterRequest = require("../../application/dtos/auth/RegisterRequest");
+const LoginRequest = require("../../application/dtos/auth/LoginRequest");
+const RefreshTokenRequest = require("../../application/dtos/auth/RefreshTokenRequest");
 
 class AuthController {
   constructor({

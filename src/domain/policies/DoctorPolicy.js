@@ -1,14 +1,15 @@
+const { Action } = require('../enums');
+
 class DoctorPolicy {
-    static canViewPatient(actor, targetUser) {
-        return actor.isDoctor() && targetUser.isPatient();
-    }
-
-    static canEditOwnProfile(actor, targetUser) {
-        return actor.isDoctor() && actor.id.equals(targetUser.id);
-    }
-
-    static canViewOtherDoctor(actor, targetUser) {
-        return actor.isDoctor() && targetUser.isDoctor();
+    can(actor, action, targetDoctor) {
+        if (actor.isAdmin()) {
+            return true;
+        }
+        if (action === Action.READ) {
+            return true;
+        }
+        return false;
     }
 }
-module.exports = DoctorPolicy;
+
+module.exports = new DoctorPolicy();

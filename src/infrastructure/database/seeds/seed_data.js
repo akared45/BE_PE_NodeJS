@@ -1,7 +1,7 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const hash = (p) => bcrypt.hashSync(p, 10);
 
-// ================= SPECIALIZATIONS =================
+// ================= SPECIALIZATIONS (OK) =================
 exports.specializations = [
     {
         _id: "CARD",
@@ -9,22 +9,6 @@ exports.specializations = [
         category: "INTERNAL",
         base_fee: 500000,
         increment: 100000,
-        fee_structure: { "0-4": 0, "5-9": 1, "10-14": 2, "15+": 3 }
-    },
-    {
-        _id: "DERM",
-        name: "Da liễu",
-        category: "INTERNAL",
-        base_fee: 400000,
-        increment: 80000,
-        fee_structure: { "0-4": 0, "5-9": 1, "10-14": 2, "15+": 3 }
-    },
-    {
-        _id: "PEDI",
-        name: "Nhi khoa",
-        category: "NHI",
-        base_fee: 350000,
-        increment: 70000,
         fee_structure: { "0-4": 0, "5-9": 1, "10-14": 2, "15+": 3 }
     },
 ];
@@ -38,20 +22,6 @@ exports.medications = [
         class: "ANALG",
         common_dosage: "1-2 viên/lần"
     },
-    {
-        _id: "VITC100",
-        name: "Vitamin C 100mg",
-        generic: "Ascorbic Acid",
-        class: "VITAMIN",
-        common_dosage: "1 viên/ngày"
-    },
-    {
-        _id: "AMOX500",
-        name: "Amoxicillin 500mg",
-        generic: "Amoxicillin",
-        class: "ANTIBIOTIC",
-        common_dosage: "1 viên/3 lần/ngày"
-    }
 ];
 
 // ================= USERS =================
@@ -60,26 +30,26 @@ exports.userSeeds = () => [
         _id: "U001",
         username: "patient01",
         email: "patient01@email.com",
-        password_hash: hash("123456"),
-        user_type: "patient",
-        is_active: true,
-        created_at: new Date("2024-01-01T10:00:00Z"),
+        passwordHash: hash("123456"),
+        userType: "patient",
+        isActive: true,
+        createdAt: new Date("2024-01-01T10:00:00Z"),
         profile: {
-            full_name: "Nguyễn Văn A",
-            date_of_birth: new Date("1990-05-15"),
+            fullName: "Nguyễn Văn A",
+            dateOfBirth: new Date("1990-05-15"),
             gender: "Male",
-            avatar_url: "/avatars/u001.jpg"
+            avatarUrl: "/avatars/u001.jpg"
         },
         contacts: [
-            { type: "phone", value: "123456789", is_primary: true },
-            { type: "email", value: "patient@email.com", is_primary: true }
+            { type: "phone", value: "123456789", isPrimary: true },
+            { type: "email", value: "patient@email.com", isPrimary: true }
         ],
-        medical_conditions: [
+        medicalConditions: [
             {
                 name: "Tiểu đường type 2",
-                diagnosed_date: new Date("2020-03-15"),
+                diagnosedDate: new Date("2020-03-15"),
                 status: "chronic",
-                treatment_plan: "Kiểm soát bằng Metformin",
+                treatmentPlan: "Kiểm soát bằng Metformin",
                 notes: "Theo dõi đường huyết"
             }
         ],
@@ -96,29 +66,29 @@ exports.userSeeds = () => [
         _id: "U002",
         username: "doctor01",
         email: "doctor01@email.com",
-        password_hash: hash("123456"),
-        user_type: "doctor",
-        is_active: true,
-        created_at: new Date("2024-01-01"),
+        passwordHash: hash("123456"),
+        userType: "doctor",
+        isActive: true,
+        createdAt: new Date("2024-01-01"),
         profile: {
-            full_name: "BS. Trần Văn C",
-            date_of_birth: new Date("1980-03-10"),
+            fullName: "BS. Trần Văn C",
+            dateOfBirth: new Date("1980-03-10"),
             gender: "Male",
-            avatar_url: "/avatars/doctor01.jpg"
+            avatarUrl: "/avatars/doctor01.jpg"
         },
-        license_number: "BS-12345",
-        spec_code: "CARD",
-        years_experience: 10,
+        licenseNumber: "BS-12345",
+        specCode: "CARD",
+        yearsExperience: 10,
         rating: 4.8,
-        review_count: 47,
+        reviewCount: 47,
         bio: "Chuyên gia tim mạch hàng đầu...",
         fee: { base: 500000, increment: 100000, level: "senior", final: 700000 },
         schedules: [
-            { day: "Monday", start: "08:00", end: "12:00", max_patients: 10 },
-            { day: "Wednesday", start: "13:00", end: "17:00", max_patients: 8 }
+            { day: "Monday", start: "08:00", end: "12:00", maxPatients: 10 },
+            { day: "Wednesday", start: "13:00", end: "17:00", maxPatients: 8 }
         ],
-        unavailable_dates: [
-            { date: new Date("2024-12-25"), reason: "Holiday", all_day: true },
+        unavailableDates: [
+            { date: new Date("2024-12-25"), reason: "Holiday", allDay: true },
             { start: new Date("2024-06-15"), end: new Date("2024-06-17"), reason: "Conference" }
         ]
     },
@@ -126,40 +96,40 @@ exports.userSeeds = () => [
         _id: "U003",
         username: "admin01",
         email: "admin@telemedicine.com",
-        password_hash: hash("admin123"),
-        user_type: "admin",
-        is_active: true,
-        created_at: new Date(),
+        passwordHash: hash("admin123"),
+        userType: "admin",
+        isActive: true,
+        createdAt: new Date(),
         profile: {
-            full_name: "Quản trị viên",
+            fullName: "Quản trị viên",
             gender: "Male",
-            avatar_url: "/avatars/admin.jpg"
+            avatarUrl: "/avatars/admin.jpg"
         }
     }
 ];
 
 
-// ================= APPOINTMENTS =================
+// ================= APPOINTMENTS=================
 exports.appointmentSeeds = [
     {
         _id: "A001",
-        patient_id: "U001",
-        doctor_id: "U002",
+        patientId: "U001",
+        doctorId: "U002",
         type: "video",
-        appointment_date: new Date("2024-01-15T09:00:00Z"),
-        duration_minutes: 30,
+        appointmentDate: new Date("2024-01-15T09:00:00Z"),
+        durationMinutes: 30,
         status: "completed",
-        calculated_fee: 700000,
+        calculatedFee: 700000,
         symptoms: "Đau đầu, sốt",
-        doctor_notes: "Bệnh nhân cần nghỉ ngơi",
-        created_at: new Date("2024-01-10T08:00:00Z"),
-        symptom_details: [
+        doctorNotes: "Bệnh nhân cần nghỉ ngơi",
+        createdAt: new Date("2024-01-10T08:00:00Z"),
+        symptomDetails: [
             { name: "Đau đầu", severity: "medium" },
             { name: "Sốt", severity: "high" }
         ],
         prescriptions: [
             {
-                med_code: "PARA500",
+                medCode: "PARA500",
                 dosage: "1 viên",
                 frequency: "3 lần/ngày",
                 duration: "5 ngày",
@@ -182,13 +152,13 @@ exports.appointmentSeeds = [
 exports.notificationSeeds = [
     {
         _id: "NOT001",
-        user_id: "U001",
+        userId: "U001",
         type: "appointment_reminder",
         title: "Lịch hẹn sắp tới",
         message: "Bạn có lịch hẹn với Dr. Trần Thị B vào 9:00 ngày 15/01",
         read: false,
-        created_at: new Date("2024-01-14T09:00:00Z"),
-        expires_at: new Date("2024-01-16T09:00:00Z")
+        createdAt: new Date("2024-01-14T09:00:00Z"),
+        expiresAt: new Date("2024-01-16T09:00:00Z")
     }
 ];
 
@@ -196,9 +166,9 @@ exports.notificationSeeds = [
 exports.userSessions = [
     {
         _id: "SESS001",
-        user_id: "U001",
-        refresh_token: "xxx",
-        expires_at: new Date("2025-01-08T10:00:00Z"),
+        userId: "U001",
+        refreshToken: "xxx",
+        expiresAt: new Date("2025-01-08T10:00:00Z"),
         revoked: false
     }
 ];
