@@ -34,8 +34,15 @@ class MongoUserSessionRepository extends IUserSessionRepository {
     const sessionDoc = await UserSessionModel.findOne({
       refreshToken: token,
     }).lean();
-
     return this._toDomain(sessionDoc);
+  }
+  
+  async deleteByRefreshToken(token) {
+    await UserSessionModel.deleteOne({ refreshToken: token });
+  }
+
+  async deleteAllByUserId(userId) {
+    await UserSessionModel.deleteMany({ userId: userId });
   }
 }
 

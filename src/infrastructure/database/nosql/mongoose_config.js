@@ -1,4 +1,3 @@
-// src/infrastructure/database/nosql/mongoose.config.js
 require('dotenv').config();
 const mongoose = require('mongoose');
 

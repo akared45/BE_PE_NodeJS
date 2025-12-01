@@ -1,5 +1,5 @@
 const IUserRepository = require("../../../../domain/repositories/IUserRepository");
-const { UserModel } = require("../models/UserModel");
+const { UserModel, PatientModel, DoctorModel } = require("../models/UserModel");
 const User = require("../../../../domain/entities/User");
 const Patient = require("../../../../domain/entities/Patient");
 const Doctor = require("../../../../domain/entities/Doctor");
@@ -42,6 +42,8 @@ class MongoUserRepository extends IUserRepository {
     }
 
     _toPersistence(entity) {
+        console.log('Entity Type:', entity.constructor.name);
+        console.log('Is Patient?', entity.isPatient ? entity.isPatient() : 'Function missing');
         const data = {
             _id: entity.id.toString(),
             username: entity.username,
@@ -53,12 +55,12 @@ class MongoUserRepository extends IUserRepository {
             profile: entity.profile,
         };
 
-        if (entity.isPatient()) {
+        if (entity.userType === UserType.PATIENT) {
             data.contacts = entity.contacts;
             data.medicalConditions = entity.medicalConditions;
             data.allergies = entity.allergies;
         }
-        else if (entity.isDoctor()) {
+        else if (entity.userType === UserType.DOCTOR) {
             data.licenseNumber = entity.licenseNumber;
             data.specCode = entity.specCode;
             data.fee = entity.fee;
@@ -79,13 +81,20 @@ class MongoUserRepository extends IUserRepository {
 
     async save(userEntity) {
         const data = this._toPersistence(userEntity);
-        const updatedDoc = await UserModel.findByIdAndUpdate(
+        let ModelToUse = UserModel;
+        if (data.userType === UserType.PATIENT) {
+            ModelToUse = PatientModel;
+        } else if (data.userType === UserType.DOCTOR) {
+            ModelToUse = DoctorModel;
+        }
+        const updatedDoc = await ModelToUse.findByIdAndUpdate(
             data._id,
             data,
             { upsert: true, new: true }
         ).lean();
         return this._toDomain(updatedDoc);
     }
+    
     async delete(id) {
         await UserModel.findByIdAndUpdate(id, { isActive: false });
     }

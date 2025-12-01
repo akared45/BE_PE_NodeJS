@@ -28,14 +28,18 @@ class AuthController {
     try {
       const requestDto = new LoginRequest(req.body);
       const result = await this.loginUserUseCase.execute(requestDto);
-      if (result.refreshToken) {
-        res.cookie('refreshToken', result.refreshToken, {
+      const refreshToken = result.auth?.refreshToken || result.refreshToken;
+      if (refreshToken) {
+        res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          secure: false,
+          sameSite: 'lax',
           maxAge: 7 * 24 * 60 * 60 * 1000
         });
+      } else {
+        console.log('No token ');
       }
+
       return res.status(200).json(result);
     } catch (error) {
       next(error);
@@ -44,10 +48,20 @@ class AuthController {
 
   refreshToken = async (req, res, next) => {
     try {
-      const token = req.cookies?.refreshToken || req.body.refreshToken;
+      const token = req.cookies?.refreshToken || req.body?.refreshToken;
+      if (!token) {
+        return res.status(401).json({ message: "Refresh Token not found" });
+      }
       const requestDto = new RefreshTokenRequest({ refreshToken: token });
       const result = await this.refreshTokenUseCase.execute(requestDto);
-
+      if (result.refreshToken) {
+        res.cookie('refreshToken', result.refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax',
+          maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+      }
       return res.status(200).json(result);
     } catch (error) {
       next(error);

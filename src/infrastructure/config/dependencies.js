@@ -21,6 +21,9 @@ const AuthorizationService = require("../../domain/policies/AuthorizationService
 const AuthController = require("../../presentation/controllers/AuthController");
 const AdminController = require("../../presentation/controllers/AdminController");
 const UserController = require("../../presentation/controllers/UserController");
+//Chat
+const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
+const GetAISuggestionUseCase = require('../../application/use_cases/chat/GetAISuggestionUseCase');
 //Service
 const authenticationService = new BcryptAuthenticationService();
 const tokenService = new JwtTokenService();
@@ -78,6 +81,10 @@ const getUserListUseCase = new GetUserListUseCase({
   userRepository: repositories.userRepository,
   authorizationService: authorizationService
 });
+//Chat
+const sendMessageUseCase = new SendMessageUseCase({
+  appointmentRepository: repositories.appointmentRepository
+});
 const authController = new AuthController({
   registerPatientUseCase,
   loginUserUseCase,
@@ -96,8 +103,11 @@ const userController = new UserController({
   getUserListUseCase,
   updatePatientProfileUseCase
 });
+
 module.exports = {
   authController,
   adminController,
-  userController
+  userController,
+  sendMessageUseCase,
+  getAISuggestionUseCase
 };

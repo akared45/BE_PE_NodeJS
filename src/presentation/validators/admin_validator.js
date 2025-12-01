@@ -2,17 +2,12 @@ const Joi = require('joi');
 const { ValidationException } = require('../../domain/exceptions');
 
 const validate = (schema) => (req, res, next) => {
-  // --- THÊM DÒNG NÀY ĐỂ DEBUG ---
-  console.log('🔍 Validating payload:', req.body);
-  console.log('📋 Using Schema Keys:', schema.$_terms.keys.map(k => k.key));
-  // ------------------------------
-
-  const { error } = schema.validate(req.body, { abortEarly: false });
-  if (error) {
-    const messages = error.details.map(d => d.message);
-    return next(new ValidationException('Invalid data', messages));
-  }
-  next();
+    const { error } = schema.validate(req.body, { abortEarly: false });
+    if (error) {
+        const messages = error.details.map(d => d.message);
+        return next(new ValidationException('Invalid data', messages));
+    }
+    next();
 };
 
 const feeSchema = Joi.object({
