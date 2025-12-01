@@ -11,5 +11,12 @@ class UserSession {
   isValid() {
     return !this.revoked && new Date() < this.expiresAt;
   }
+  
+  revoke() {
+    return new UserSession({
+      ...this,
+      revoked: true
+    });
+  }
 }
 module.exports = UserSession;

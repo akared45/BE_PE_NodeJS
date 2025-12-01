@@ -1,4 +1,4 @@
-const { UserId } = require('../value-objects');
+const { UserId } = require('../value_objects');
 const { UserType, Gender } = require('../enums');
 
 class User {
@@ -18,7 +18,6 @@ class User {
         this.userType = userType;
         this.isActive = Boolean(isActive);
         this.createdAt = createdAt instanceof Date ? createdAt : new Date(createdAt);
-
         this.profile = {
             fullName: profile.fullName?.trim() || '',
             dateOfBirth: profile.dateOfBirth ? new Date(profile.dateOfBirth) : null,
@@ -26,7 +25,9 @@ class User {
             avatarUrl: profile.avatarUrl || null
         };
 
-        Object.freeze(this);
+        if (this.constructor === User) {
+            Object.freeze(this);
+        }
     }
     isPatient() {
         return this.userType === UserType.PATIENT;

@@ -1,5 +1,7 @@
 const { AppointmentStatus, AppointmentType } = require('../enums');
-const { Money, SymptomDetail, Prescription, Message } = require('../value-objects');
+const { Money, SymptomDetail, Prescription } = require('../value_objects');
+// Message là Entity con, nên import trực tiếp hoặc từ index của entities
+const Message = require('./Message'); 
 
 class Appointment {
   constructor({
@@ -31,7 +33,12 @@ class Appointment {
     this.createdAt = createdAt instanceof Date ? createdAt : new Date(createdAt);
     this.symptomDetails = symptomDetails.map(s => new SymptomDetail(s));
     this.prescriptions = prescriptions.map(p => new Prescription(p));
-    this.messages = messages.map(m => new Message(m));
+    this.messages = (messages || []).map(m => m instanceof Message ? m : new Message(m));
+    Object.freeze(this);
+  }
+  
+  hasParticipant(userId) {
+    return this.patientId === userId || this.doctorId === userId;
   }
 
   complete(notes = '', prescriptions = []) {
@@ -46,19 +53,21 @@ class Appointment {
   cancel() {
     return new Appointment({ ...this, status: AppointmentStatus.CANCELLED });
   }
-
-  addMessage(senderId, content, type = 'text', fileUrl = null) {
+  addMessage({ senderId, content, type = 'text', fileUrl = null, aiAnalysis = null }) {
     const newMsg = new Message({
       senderId,
       type,
       content,
       fileUrl,
+      aiAnalysis,
       timestamp: new Date()
     });
+
     return new Appointment({
       ...this,
       messages: [...this.messages, newMsg]
     });
   }
 }
+
 module.exports = Appointment;

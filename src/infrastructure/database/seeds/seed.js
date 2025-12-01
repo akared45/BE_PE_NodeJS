@@ -12,16 +12,16 @@ const {
 
 async function seed() {
   try {
-    await connect(); 
+    await connect();
     const db = mongoose.connection.db;
     console.log('Seeding database:', db.databaseName);
     const seeds = [
       { name: 'specializations', docs: specializations },
       { name: 'medications', docs: medications },
-      { name: 'users', docs: userSeeds() }, 
+      { name: 'users', docs: userSeeds() },
       { name: 'appointments', docs: appointmentSeeds },
       { name: 'notifications', docs: notificationSeeds },
-      { name: 'user_sessions', docs: userSessions },
+      { name: 'usersessions', docs: userSessions },
     ];
 
     for (const { name, docs } of seeds) {

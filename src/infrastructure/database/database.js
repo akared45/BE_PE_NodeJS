@@ -1,14 +1,33 @@
-// src/infrastructure/database/database.factory.js
+require('dotenv').config();
+
+const mongooseConfig = require('./nosql/mongoose_config');
+const MongoUserRepository = require('./nosql/repositories/MongoUserRepository');
+const MongoUserSessionRepository = require('./nosql/repositories/MongoUserSessionRepository');
+
 const dbType = process.env.DB_TYPE || 'nosql';
 
+const connectDatabase = async () => {
+  if (dbType === 'nosql') {
+    await mongooseConfig.connect();
+  } else {
+    console.log('SQL connection not implemented yet');
+  }
+};
+let repositories;
+
 if (dbType === 'nosql') {
-  require('./nosql/mongoose.config').connect();
+  repositories = {
+    userRepository: new MongoUserRepository(),
+    userSessionRepository: new MongoUserSessionRepository(),
+  };
+} else {
+  repositories = {
+    userRepository: null,
+    userSessionRepository: null,
+  };
 }
 
-const repos = dbType === 'nosql' ? {
-
-} : {
-    //sql
+module.exports = {
+  connectDatabase,
+  repositories
 };
-
-module.exports = repos;

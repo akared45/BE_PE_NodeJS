@@ -9,5 +9,5 @@ module.exports = {
   FeeStructure: require('./FeeStructure'),
   SymptomDetail: require('./SymptomDetail'),
   Prescription: require('./Prescription'),
-  Message: require('./Message')
+  AIAnalysis: require('./AIAnalysis')
 };
