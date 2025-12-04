@@ -2,6 +2,7 @@ const IAppointmentRepository = require('../../../../domain/repositories/IAppoint
 const AppointmentModel = require('../models/AppointmentModel');
 const Appointment = require('../../../../domain/entities/Appointment');
 const Message = require('../../../../domain/entities/Message');
+const Money = require('../../../../domain/value_objects/Money');
 
 class MongoAppointmentRepository extends IAppointmentRepository {
     _toDomain(doc) {
@@ -12,36 +13,53 @@ class MongoAppointmentRepository extends IAppointmentRepository {
             doctorId: doc.doctorId,
             type: doc.type,
             appointmentDate: doc.appointmentDate,
+            durationMinutes: doc.durationMinutes,
             status: doc.status,
-            messages: (doc.messages || []).map(m => new Message({
-                senderId: m.senderId,
-                content: m.content,
-                type: m.type,
-                fileUrl: m.fileUrl,
-                timestamp: m.timestamp,
-                isRead: m.read,
-                aiAnalysis: m.aiAnalysis
-            }))
+            calculatedFee: new Money(doc.calculatedFee),
+            symptoms: doc.symptoms,
+            doctorNotes: doc.doctorNotes,
+            createdAt: doc.createdAt,
+            messages: (doc.messages || []).map(m => new Message(m)),
+            symptomDetails: doc.symptomDetails || [],
+            prescriptions: doc.prescriptions || [],
         });
     }
+
     _toPersistence(entity) {
         return {
-            _id: entity.id,
+            _id: entity.id.toString(),
             patientId: entity.patientId,
             doctorId: entity.doctorId,
             type: entity.type,
             appointmentDate: entity.appointmentDate,
             durationMinutes: entity.durationMinutes,
             status: entity.status,
-            calculatedFee: entity.calculatedFee.amount || entity.calculatedFee,
+            calculatedFee: entity.calculatedFee.amount,
             symptoms: entity.symptoms,
             doctorNotes: entity.doctorNotes,
+            createdAt: entity.createdAt,
+            messages: entity.messages,
+            symptomDetails: entity.symptomDetails,
+            prescriptions: entity.prescriptions
+
         };
     }
+
+    async save(appointmentEntity) {
+        const data = this._toPersistence(appointmentEntity);
+        const updatedDoc = await AppointmentModel.findByIdAndUpdate(
+            data._id,
+            data,
+            { upsert: true, new: true }
+        ).lean();
+        return this._toDomain(updatedDoc);
+    }
+
     async findById(id) {
         const doc = await AppointmentModel.findById(id).lean();
         return this._toDomain(doc);
     }
+
     async addMessage(appointmentId, messageEntity) {
         const messageData = {
             senderId: messageEntity.senderId,
@@ -61,30 +79,26 @@ class MongoAppointmentRepository extends IAppointmentRepository {
         });
     }
 
-    async save(appointmentEntity) {
-        const data = this._toPersistence(appointmentEntity);
-        await AppointmentModel.findByIdAndUpdate(
-            data._id,
-            data,
-            { upsert: true, new: true }
-        );
-    }
-
     async findOverlapping(doctorId, newStart, newEnd) {
-        const bufferTime = 30 * 60000;
+        const startOfDay = new Date(newStart);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(newStart);
+        endOfDay.setHours(23, 59, 59, 999);
         const docs = await AppointmentModel.find({
             doctorId: doctorId,
             status: { $ne: 'cancelled' },
             appointmentDate: {
-                $gte: new Date(newStart.getTime() - bufferTime + 1),
-                $lt: newEnd
+                $gte: startOfDay,
+                $lte: endOfDay
             }
         }).lean();
-        return docs.filter(doc => {
-            const docStart = new Date(doc.appointmentDate);
-            const docEnd = new Date(docStart.getTime() + (doc.durationMinutes || 30) * 60000);
-            return (docStart < newEnd && docEnd > newStart);
-        }).map(d => this._toDomain(d));
+        const overlappingDocs = docs.filter(doc => {
+            const existingStart = new Date(doc.appointmentDate);
+            const existingEnd = new Date(existingStart.getTime() + (doc.durationMinutes || 30) * 60000);
+            return (existingStart < newEnd && existingEnd > newStart);
+        });
+
+        return overlappingDocs.map(d => this._toDomain(d));
     }
 }
 

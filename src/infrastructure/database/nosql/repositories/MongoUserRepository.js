@@ -39,7 +39,9 @@ class MongoUserRepository extends IUserRepository {
                     specializationName: specName,
                     bio: doc.bio || '',
                     qualifications: doc.qualifications || [],
-                    workHistory: doc.workHistory || []
+                    workHistory: doc.workHistory || [],
+                    schedules: doc.schedules || [],
+                    unavailableDates: doc.unavailableDates || []
                 });
 
             default:
@@ -70,6 +72,8 @@ class MongoUserRepository extends IUserRepository {
             data.bio = entity.bio;
             data.qualifications = entity.qualifications;
             data.workHistory = entity.workHistory;
+            data.schedules = entity.schedules;
+            data.unavailableDates = entity.unavailableDates;
         }
 
         return data;
@@ -99,7 +103,7 @@ class MongoUserRepository extends IUserRepository {
             .lean();
         return docs.map(doc => this._toDomain(doc));
     }
-    
+
     async save(userEntity) {
         const data = this._toPersistence(userEntity);
         let ModelToUse = UserModel;

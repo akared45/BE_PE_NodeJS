@@ -1,7 +1,7 @@
 const { Server } = require("socket.io");
 const socketAuthMiddleWare = require("./socket_middleware");
 
-const { sendMessageUseCase } = require("../config/dependencies_2");
+const { sendMessageUseCase } = require("../config/dependencies");
 
 let io;
 

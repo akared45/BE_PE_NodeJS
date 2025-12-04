@@ -1,9 +1,12 @@
 const Appointment = require('../../../domain/entities/Appointment');
+const Money = require('../../../domain/value_objects/Money');
 const { AppointmentStatus, AppointmentType } = require('../../../domain/enums');
 const { AuthorizationException, BusinessRuleException, NotFoundException } = require('../../../domain/exceptions');
 
 class BookAppointmentUseCase {
     static FIXED_PRICE = 50000;
+    static DURATION_MINUTES = 30;
+
     constructor({ appointmentRepository, userRepository }) {
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -12,7 +15,11 @@ class BookAppointmentUseCase {
     async execute(request) {
         const { patientId, doctorId, appointmentDate, symptoms, notes } = request;
         const startTime = new Date(appointmentDate);
-        const DURATION = 30;
+        const endTime = new Date(startTime.getTime() + BookAppointmentUseCase.DURATION_MINUTES * 60000);
+
+        if (startTime < new Date()) {
+            throw new BusinessRuleException("Cannot book appointment in the past");
+        }
 
         const doctor = await this.userRepository.findById(doctorId);
         if (!doctor || !doctor.isDoctor()) {
@@ -22,27 +29,23 @@ class BookAppointmentUseCase {
         const patient = await this.userRepository.findById(patientId);
         if (!patient) throw new AuthorizationException("User not found");
 
-        if (!doctor.isWorkingAt(startTime, DURATION)) {
-            throw new BusinessRuleException("Doctor is not working at this time");
+        if (!doctor.isWorkingAt(startTime, BookAppointmentUseCase.DURATION_MINUTES)) {
+            throw new BusinessRuleException("Doctor is not working at this time (Check schedule)");
         }
 
-        const endTime = new Date(startTime.getTime() + DURATION * 60000);
         const overlapping = await this.appointmentRepository.findOverlapping(doctorId, startTime, endTime);
-
         if (overlapping.length > 0) {
-            throw new BusinessRuleException("The selected time slot is already booked");
+            throw new BusinessRuleException("The selected time slot is already booked by another patient");
         }
-
-        const feeAmount = BookAppointmentUseCase.FIXED_PRICE;
 
         const newAppointment = new Appointment({
             patientId,
             doctorId,
             type: AppointmentType.CHAT,
             appointmentDate: startTime,
-            durationMinutes: 30,
+            durationMinutes: BookAppointmentUseCase.DURATION_MINUTES,
+            calculatedFee: new Money(BookAppointmentUseCase.FIXED_PRICE),
             status: AppointmentStatus.PENDING,
-            calculatedFee: new Money(feeAmount),
             symptoms: symptoms,
             doctorNotes: notes || ''
         });
@@ -51,7 +54,9 @@ class BookAppointmentUseCase {
 
         return {
             message: "Appointment booked successfully",
-            price: feeAmount
+            appointmentId: newAppointment.id.toString(),
+            price: BookAppointmentUseCase.FIXED_PRICE,
+            time: startTime.toISOString()
         };
     }
 }

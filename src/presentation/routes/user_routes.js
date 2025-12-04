@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { userController } = require('../../infrastructure/config/dependencies_2');
+const { userController } = require('../../infrastructure/config/dependencies');
 const { verifyToken } = require('../middleware/auth_middleware');
 
 router.use(verifyToken);

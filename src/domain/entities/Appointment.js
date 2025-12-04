@@ -1,6 +1,6 @@
 const { AppointmentStatus, AppointmentType } = require('../enums');
 const { Money, SymptomDetail, Prescription } = require('../value_objects');
-const Message = require('./Message'); 
+const Message = require('./Message');
 
 class Appointment {
   constructor({
@@ -26,7 +26,7 @@ class Appointment {
     this.appointmentDate = new Date(appointmentDate);
     this.durationMinutes = Number(durationMinutes);
     this.status = status;
-    this.calculatedFee = new Money(calculatedFee);
+    this.calculatedFee = calculatedFee instanceof Money ? calculatedFee : new Money(Number(calculatedFee));
     this.symptoms = symptoms?.trim() || '';
     this.doctorNotes = doctorNotes?.trim() || '';
     this.createdAt = createdAt instanceof Date ? createdAt : new Date(createdAt);
@@ -35,11 +35,23 @@ class Appointment {
     this.messages = (messages || []).map(m => m instanceof Message ? m : new Message(m));
     Object.freeze(this);
   }
-  
+
   hasParticipant(userId) {
     return this.patientId === userId || this.doctorId === userId;
   }
 
+  confirm() {
+    return new Appointment({ ...this, status: AppointmentStatus.CONFIRMED });
+  }
+
+  cancel(reason) {
+    return new Appointment({
+      ...this,
+      status: AppointmentStatus.CANCELLED,
+      doctorNotes: reason ? `Cancelled: ${reason}` : this.doctorNotes
+    });
+  }
+  
   complete(notes = '', prescriptions = []) {
     return new Appointment({
       ...this,
@@ -49,9 +61,6 @@ class Appointment {
     });
   }
 
-  cancel() {
-    return new Appointment({ ...this, status: AppointmentStatus.CANCELLED });
-  }
   addMessage({ senderId, content, type = 'text', fileUrl = null, aiAnalysis = null }) {
     const newMsg = new Message({
       senderId,
