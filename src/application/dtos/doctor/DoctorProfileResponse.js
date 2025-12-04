@@ -5,11 +5,14 @@ class DoctorProfileResponse {
         this.username = doctorEntity.username;
         this.fullName = doctorEntity.profile.fullName;
         this.avatarUrl = doctorEntity.profile.avatarUrl;
+        this.bio = doctorEntity.bio;
+        this.specialization = {
+            code: doctorEntity.specCode,
+            name: doctorEntity.specializationName
+        };
         this.licenseNumber = doctorEntity.licenseNumber;
-        this.specCode = doctorEntity.specCode;
-        this.fee = doctorEntity.fee;
-        this.qualifications = doctorEntity.qualifications || [];
-        this.workHistory = doctorEntity.workHistory || [];
+        this.qualifications = doctorEntity.qualifications;
+        this.workHistory = doctorEntity.workHistory;
     }
 }
 module.exports = DoctorProfileResponse;

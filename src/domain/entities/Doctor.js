@@ -1,5 +1,5 @@
 const User = require('./User');
-const { FeeStructure, Schedule, UnavailableDate } = require('../value_objects');
+const { Schedule, UnavailableDate } = require('../value_objects');
 const { UserType } = require('../enums');
 
 class Doctor extends User {
@@ -9,19 +9,33 @@ class Doctor extends User {
       userType: UserType.DOCTOR,
       profile: data.profile
     });
-
     this.licenseNumber = data.licenseNumber;
     this.specCode = data.specCode;
-    this.yearsExperience = Number(data.yearsExperience) || 0;
-    this.rating = Number(data.rating) || 0;
-    this.reviewCount = Number(data.reviewCount) || 0;
+    this.specializationName = data.specializationName || '';
     this.bio = data.bio?.trim() || '';
-    this.fee = new FeeStructure(data.fee || { base: 0, increment: 0, level: '', final: 0 });
     this.qualifications = data.qualifications || [];
     this.workHistory = data.workHistory || [];
+    this.yearsExperience = this._calculateYearsExperience();
     this.schedules = (data.schedules || []).map(s => new Schedule(s));
     this.unavailableDates = (data.unavailableDates || []).map(d => new UnavailableDate(d));
     Object.freeze(this);
+  }
+  
+  _calculateYearsExperience() {
+    if (!this.workHistory || this.workHistory.length === 0) {
+      return 0;
+    }
+    let totalMilliseconds = 0;
+    const now = new Date();
+    this.workHistory.forEach(job => {
+      const start = new Date(job.from);
+      const end = job.to ? new Date(job.to) : now;
+      if (start < end) {
+        totalMilliseconds += (end - start);
+      }
+    });
+    const millisecondsPerYear = 1000 * 60 * 60 * 24 * 365.25;
+    return Math.floor(totalMilliseconds / millisecondsPerYear);
   }
 
   isAvailableOn(date) {
@@ -43,4 +57,5 @@ class Doctor extends User {
     return bookingStart >= schedule.start && bookingEnd <= schedule.end;
   }
 }
+
 module.exports = Doctor;

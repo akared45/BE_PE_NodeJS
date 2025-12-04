@@ -4,6 +4,7 @@ const User = require("../../../../domain/entities/User");
 const Patient = require("../../../../domain/entities/Patient");
 const Doctor = require("../../../../domain/entities/Doctor");
 const { UserType } = require("../../../../domain/enums");
+const SpecializationModel = require("../models/SpecializationModel");
 
 class MongoUserRepository extends IUserRepository {
     _toDomain(doc) {
@@ -29,11 +30,14 @@ class MongoUserRepository extends IUserRepository {
                 });
 
             case UserType.DOCTOR:
+                const specName = (doc.specCode && doc.specCode.name) ? doc.specCode.name : '';
+                const specCodeValue = (doc.specCode && doc.specCode._id) ? doc.specCode._id : doc.specCode;
                 return new Doctor({
                     ...baseData,
                     licenseNumber: doc.licenseNumber,
-                    specCode: doc.specCode,
-                    fee: doc.fee,
+                    specCode: specCodeValue,
+                    specializationName: specName,
+                    bio: doc.bio || '',
                     qualifications: doc.qualifications || [],
                     workHistory: doc.workHistory || []
                 });
@@ -44,8 +48,6 @@ class MongoUserRepository extends IUserRepository {
     }
 
     _toPersistence(entity) {
-        console.log('Entity Type:', entity.constructor.name);
-        console.log('Is Patient?', entity.isPatient ? entity.isPatient() : 'Function missing');
         const data = {
             _id: entity.id.toString(),
             username: entity.username,
@@ -65,7 +67,7 @@ class MongoUserRepository extends IUserRepository {
         else if (entity.userType === UserType.DOCTOR) {
             data.licenseNumber = entity.licenseNumber;
             data.specCode = entity.specCode;
-            data.fee = entity.fee;
+            data.bio = entity.bio;
             data.qualifications = entity.qualifications;
             data.workHistory = entity.workHistory;
         }
@@ -74,7 +76,7 @@ class MongoUserRepository extends IUserRepository {
     }
 
     async findById(id) {
-        const doc = await UserModel.findById(id).lean();
+        const doc = await UserModel.findById(id).populate('specCode').lean();
         return this._toDomain(doc);
     }
 
@@ -83,6 +85,21 @@ class MongoUserRepository extends IUserRepository {
         return this._toDomain(doc);
     }
 
+    async delete(id) {
+        await UserModel.findByIdAndUpdate(id, { isActive: false });
+    }
+    async findAllByUserType(userType, options = {}) {
+        const { limit = 10, skip = 0 } = options;
+
+        const docs = await UserModel.find({ userType: userType })
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .populate('specCode')
+            .lean();
+        return docs.map(doc => this._toDomain(doc));
+    }
+    
     async save(userEntity) {
         const data = this._toPersistence(userEntity);
         let ModelToUse = UserModel;
@@ -97,20 +114,6 @@ class MongoUserRepository extends IUserRepository {
             { upsert: true, new: true }
         ).lean();
         return this._toDomain(updatedDoc);
-    }
-
-    async delete(id) {
-        await UserModel.findByIdAndUpdate(id, { isActive: false });
-    }
-    async findAllByUserType(userType, options = {}) {
-        const { limit = 10, skip = 0 } = options;
-
-        const docs = await UserModel.find({ userType: userType })
-            .skip(skip)
-            .limit(limit)
-            .sort({ createdAt: -1 })
-            .lean();
-        return docs.map(doc => this._toDomain(doc));
     }
 }
 

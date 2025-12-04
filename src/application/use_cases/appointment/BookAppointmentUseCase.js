@@ -3,6 +3,7 @@ const { AppointmentStatus, AppointmentType } = require('../../../domain/enums');
 const { AuthorizationException, BusinessRuleException, NotFoundException } = require('../../../domain/exceptions');
 
 class BookAppointmentUseCase {
+    static FIXED_PRICE = 50000;
     constructor({ appointmentRepository, userRepository }) {
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
@@ -32,16 +33,16 @@ class BookAppointmentUseCase {
             throw new BusinessRuleException("The selected time slot is already booked");
         }
 
-        const feeAmount = doctor.fee.final.amount || doctor.fee.final;
+        const feeAmount = BookAppointmentUseCase.FIXED_PRICE;
 
         const newAppointment = new Appointment({
             patientId,
             doctorId,
             type: AppointmentType.CHAT,
             appointmentDate: startTime,
-            durationMinutes: DURATION,
+            durationMinutes: 30,
             status: AppointmentStatus.PENDING,
-            calculatedFee: feeAmount,
+            calculatedFee: new Money(feeAmount),
             symptoms: symptoms,
             doctorNotes: notes || ''
         });
@@ -50,7 +51,7 @@ class BookAppointmentUseCase {
 
         return {
             message: "Appointment booked successfully",
-            appointmentId: newAppointment.id
+            price: feeAmount
         };
     }
 }

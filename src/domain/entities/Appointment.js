@@ -1,6 +1,5 @@
 const { AppointmentStatus, AppointmentType } = require('../enums');
 const { Money, SymptomDetail, Prescription } = require('../value_objects');
-// Message là Entity con, nên import trực tiếp hoặc từ index của entities
 const Message = require('./Message'); 
 
 class Appointment {

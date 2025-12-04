@@ -7,7 +7,6 @@ class DoctorResponse {
         this.avatarUrl = doctor.profile.avatarUrl;
         this.licenseNumber = doctor.licenseNumber;
         this.specCode = doctor.specCode;
-        this.fee = doctor.fee;
     }
 }
 module.exports = DoctorResponse;

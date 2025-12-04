@@ -6,10 +6,7 @@ exports.specializations = [
     {
         _id: "CARD",
         name: "Tim mạch",
-        category: "INTERNAL",
-        baseFee: 500000, // Đã đổi sang camelCase nếu schema dùng baseFee
-        increment: 100000,
-        feeStructure: { "0-4": 0, "5-9": 1, "10-14": 2, "15+": 3 }
+        category: "INTERNAL"
     }
 ];
 
@@ -78,11 +75,10 @@ exports.userSeeds = () => [
         },
         licenseNumber: "BS-12345",
         specCode: "CARD",
-        yearsExperience: 10,
+        yearsExperience: 20,
         rating: 4.8,
         reviewCount: 47,
         bio: "Chuyên gia...",
-        fee: { base: 500000, increment: 100000, level: "senior", final: 700000 },
         schedules: [
             { day: "Monday", start: "08:00", end: "12:00", maxPatients: 10 },
             { day: "Wednesday", start: "13:00", end: "17:00", maxPatients: 8 }

@@ -7,7 +7,6 @@ class CreateDoctorRequest {
         this.fullName = data.fullName;
         this.licenseNumber = data.licenseNumber;
         this.specCode = data.specCode;
-        this.fee = data.fee;
         this.qualifications = data.qualifications || [];
         this.workHistory = data.workHistory || [];
     }

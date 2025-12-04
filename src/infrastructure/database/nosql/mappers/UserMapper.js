@@ -31,8 +31,7 @@ class UserMapper {
         return new Doctor({
           ...baseData,
           licenseNumber: rawDoc.licenseNumber,
-          specCode: rawDoc.specCode,
-          fee: rawDoc.fee
+          specCode: rawDoc.specCode
         });
 
       default:
@@ -59,7 +58,6 @@ class UserMapper {
     } else if (entity instanceof Doctor) {
       data.licenseNumber = entity.licenseNumber;
       data.specCode = entity.specCode;
-      data.fee = entity.fee;
     }
 
     return data;

@@ -1,6 +1,5 @@
 const { Action, Resource } = require('../../../domain/enums/Permission');
 const { AuthorizationException, NotFoundException } = require('../../../domain/exceptions');
-const FeeStructure = require('../../../domain/value_objects/FeeStructure');
 
 class UpdateDoctorUseCase {
     constructor({ userRepository, authorizationService }) {
@@ -42,10 +41,6 @@ class UpdateDoctorUseCase {
 
         if (specCode !== undefined) {
             targetDoctor.specCode = specCode;
-        }
-
-        if (fee !== undefined) {
-            targetDoctor.fee = new FeeStructure(fee);
         }
 
         if (isActive !== undefined) {
