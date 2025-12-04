@@ -1,16 +1,16 @@
 const bcrypt = require('bcryptjs');
 const hash = (p) => bcrypt.hashSync(p, 10);
 
-// ================= SPECIALIZATIONS (OK) =================
+// ================= SPECIALIZATIONS =================
 exports.specializations = [
     {
         _id: "CARD",
         name: "Tim mạch",
         category: "INTERNAL",
-        base_fee: 500000,
+        baseFee: 500000, // Đã đổi sang camelCase nếu schema dùng baseFee
         increment: 100000,
-        fee_structure: { "0-4": 0, "5-9": 1, "10-14": 2, "15+": 3 }
-    },
+        feeStructure: { "0-4": 0, "5-9": 1, "10-14": 2, "15+": 3 }
+    }
 ];
 
 // ================= MEDICATIONS =================
@@ -20,8 +20,8 @@ exports.medications = [
         name: "Paracetamol 500mg",
         generic: "Paracetamol",
         class: "ANALG",
-        common_dosage: "1-2 viên/lần"
-    },
+        commonDosage: "1-2 viên/lần"
+    }
 ];
 
 // ================= USERS =================
@@ -81,7 +81,7 @@ exports.userSeeds = () => [
         yearsExperience: 10,
         rating: 4.8,
         reviewCount: 47,
-        bio: "Chuyên gia tim mạch hàng đầu...",
+        bio: "Chuyên gia...",
         fee: { base: 500000, increment: 100000, level: "senior", final: 700000 },
         schedules: [
             { day: "Monday", start: "08:00", end: "12:00", maxPatients: 10 },
@@ -90,6 +90,14 @@ exports.userSeeds = () => [
         unavailableDates: [
             { date: new Date("2024-12-25"), reason: "Holiday", allDay: true },
             { start: new Date("2024-06-15"), end: new Date("2024-06-17"), reason: "Conference" }
+        ],
+        qualifications: [
+            { degree: "Bác sĩ Đa khoa", institution: "Đại học Y Hà Nội", year: 2005 },
+            { degree: "Thạc sĩ Tim mạch", institution: "Đại học Y Dược TP.HCM", year: 2010 }
+        ],
+        workHistory: [
+            { position: "Bác sĩ nội trú", place: "Bệnh viện Bạch Mai", from: new Date("2005-01-01"), to: new Date("2010-01-01") },
+            { position: "Trưởng khoa Tim mạch", place: "Bệnh viện Chợ Rẫy", from: new Date("2010-02-01"), to: null }
         ]
     },
     {
@@ -109,7 +117,7 @@ exports.userSeeds = () => [
 ];
 
 
-// ================= APPOINTMENTS=================
+// ================= APPOINTMENTS =================
 exports.appointmentSeeds = [
     {
         _id: "A001",
@@ -129,7 +137,7 @@ exports.appointmentSeeds = [
         ],
         prescriptions: [
             {
-                medCode: "PARA500",
+                medicationCode: "PARA500",
                 dosage: "1 viên",
                 frequency: "3 lần/ngày",
                 duration: "5 ngày",
@@ -138,10 +146,10 @@ exports.appointmentSeeds = [
         ],
         messages: [
             {
-                sender: "U001",
+                senderId: "U001",
                 type: "text",
                 content: "Xin chào bác sĩ...",
-                ts: new Date("2024-01-15T08:30:00Z"),
+                timestamp: new Date("2024-01-15T08:30:00Z"),
                 read: true
             }
         ]

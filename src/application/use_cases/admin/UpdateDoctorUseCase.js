@@ -51,6 +51,8 @@ class UpdateDoctorUseCase {
         if (isActive !== undefined) {
             targetDoctor.isActive = isActive;
         }
+        if (request.qualifications) targetDoctor.qualifications = request.qualifications;
+        if (request.workHistory) targetDoctor.workHistory = request.workHistory;
 
         await this.userRepository.save(targetDoctor);
 

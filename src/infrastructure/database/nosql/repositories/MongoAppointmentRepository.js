@@ -24,7 +24,20 @@ class MongoAppointmentRepository extends IAppointmentRepository {
             }))
         });
     }
-
+    _toPersistence(entity) {
+        return {
+            _id: entity.id,
+            patientId: entity.patientId,
+            doctorId: entity.doctorId,
+            type: entity.type,
+            appointmentDate: entity.appointmentDate,
+            durationMinutes: entity.durationMinutes,
+            status: entity.status,
+            calculatedFee: entity.calculatedFee.amount || entity.calculatedFee,
+            symptoms: entity.symptoms,
+            doctorNotes: entity.doctorNotes,
+        };
+    }
     async findById(id) {
         const doc = await AppointmentModel.findById(id).lean();
         return this._toDomain(doc);
@@ -46,6 +59,32 @@ class MongoAppointmentRepository extends IAppointmentRepository {
         await AppointmentModel.findByIdAndUpdate(appointmentId, {
             $push: { messages: messageData }
         });
+    }
+
+    async save(appointmentEntity) {
+        const data = this._toPersistence(appointmentEntity);
+        await AppointmentModel.findByIdAndUpdate(
+            data._id,
+            data,
+            { upsert: true, new: true }
+        );
+    }
+
+    async findOverlapping(doctorId, newStart, newEnd) {
+        const bufferTime = 30 * 60000;
+        const docs = await AppointmentModel.find({
+            doctorId: doctorId,
+            status: { $ne: 'cancelled' },
+            appointmentDate: {
+                $gte: new Date(newStart.getTime() - bufferTime + 1),
+                $lt: newEnd
+            }
+        }).lean();
+        return docs.filter(doc => {
+            const docStart = new Date(doc.appointmentDate);
+            const docEnd = new Date(docStart.getTime() + (doc.durationMinutes || 30) * 60000);
+            return (docStart < newEnd && docEnd > newStart);
+        }).map(d => this._toDomain(d));
     }
 }
 

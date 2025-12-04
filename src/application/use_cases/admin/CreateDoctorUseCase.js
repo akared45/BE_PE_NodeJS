@@ -55,7 +55,9 @@ class CreateDoctorUseCase {
             specCode: request.specCode,
             fee: doctorFee,
             schedules: [],
-            unavailableDates: []
+            unavailableDates: [],
+            qualifications: request.qualifications,
+            workHistory: request.workHistory
         });
         const savedDoctor = await this.userRepository.save(newDoctor);
 

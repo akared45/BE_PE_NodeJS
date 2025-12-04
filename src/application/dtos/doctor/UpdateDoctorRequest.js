@@ -11,6 +11,8 @@ class UpdateDoctorRequest {
             final: Number(data.fee.final)
         } : undefined;
         this.isActive = data.isActive;
+        this.qualifications = data.qualifications;
+        this.workHistory = data.workHistory;
     }
 }
 

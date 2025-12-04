@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { patientController } = require('../../infrastructure/config/dependencies');
+const { patientController } = require('../../infrastructure/config/dependencies_2');
 const { verifyToken } = require('../middleware/auth_middleware');
 const { validateUpdatePatient } = require('../validators/user_validator');
 

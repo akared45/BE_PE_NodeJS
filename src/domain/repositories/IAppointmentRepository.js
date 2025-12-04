@@ -8,5 +8,13 @@ class IAppointmentRepository {
     async findById(appointmentId) {
         throw new NotImplementedException('findById');
     }
+
+    async save(appointment) {
+        throw new NotImplementedException('save');
+    }
+
+    async findOverlapping(doctorId, startTime, endTime) {
+        throw new NotImplementedException('findOverlapping');
+    }
 }
 module.exports = IAppointmentRepository;

@@ -17,6 +17,19 @@ const feeSchema = Joi.object({
     final: Joi.number().min(0).required()
 });
 
+const qualificationSchema = Joi.object({
+    degree: Joi.string().required(),
+    institution: Joi.string().required(),
+    year: Joi.number().integer().min(1900).max(new Date().getFullYear())
+});
+
+const workHistorySchema = Joi.object({
+    position: Joi.string().required(),
+    place: Joi.string().required(),
+    from: Joi.date().required(),
+    to: Joi.date().allow(null)
+});
+
 const schemas = {
     createDoctor: Joi.object({
         username: Joi.string().required(),
@@ -25,7 +38,9 @@ const schemas = {
         fullName: Joi.string().required(),
         licenseNumber: Joi.string().required(),
         specCode: Joi.string().required(),
-        fee: feeSchema.optional()
+        fee: feeSchema.optional(),
+        qualifications: Joi.array().items(qualificationSchema).optional(),
+        workHistory: Joi.array().items(workHistorySchema).optional()
     }),
 
     updateDoctor: Joi.object({
@@ -33,7 +48,9 @@ const schemas = {
         licenseNumber: Joi.string().optional(),
         specCode: Joi.string().optional(),
         fee: feeSchema.optional(),
-        isActive: Joi.boolean().optional()
+        isActive: Joi.boolean().optional(),
+        qualifications: Joi.array().items(qualificationSchema).optional(),
+        workHistory: Joi.array().items(workHistorySchema).optional()
     })
 };
 

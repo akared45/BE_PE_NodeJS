@@ -33,7 +33,9 @@ class MongoUserRepository extends IUserRepository {
                     ...baseData,
                     licenseNumber: doc.licenseNumber,
                     specCode: doc.specCode,
-                    fee: doc.fee
+                    fee: doc.fee,
+                    qualifications: doc.qualifications || [],
+                    workHistory: doc.workHistory || []
                 });
 
             default:
@@ -64,6 +66,8 @@ class MongoUserRepository extends IUserRepository {
             data.licenseNumber = entity.licenseNumber;
             data.specCode = entity.specCode;
             data.fee = entity.fee;
+            data.qualifications = entity.qualifications;
+            data.workHistory = entity.workHistory;
         }
 
         return data;
@@ -94,7 +98,7 @@ class MongoUserRepository extends IUserRepository {
         ).lean();
         return this._toDomain(updatedDoc);
     }
-    
+
     async delete(id) {
         await UserModel.findByIdAndUpdate(id, { isActive: false });
     }

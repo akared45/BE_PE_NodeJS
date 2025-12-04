@@ -8,6 +8,8 @@ class DoctorProfileResponse {
         this.licenseNumber = doctorEntity.licenseNumber;
         this.specCode = doctorEntity.specCode;
         this.fee = doctorEntity.fee;
+        this.qualifications = doctorEntity.qualifications || [];
+        this.workHistory = doctorEntity.workHistory || [];
     }
 }
 module.exports = DoctorProfileResponse;

@@ -8,6 +8,8 @@ class CreateDoctorRequest {
         this.licenseNumber = data.licenseNumber;
         this.specCode = data.specCode;
         this.fee = data.fee;
+        this.qualifications = data.qualifications || [];
+        this.workHistory = data.workHistory || [];
     }
 }
 module.exports = CreateDoctorRequest;
