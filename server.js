@@ -9,6 +9,8 @@ const { initializeSocket } = require('./src/infrastructure/websocket/socket_serv
 const errorMiddleware = require('./src/presentation/middleware/error_middleware');
 const authRoutes = require('./src/presentation/routes/auth_routes');
 const adminRoutes = require('./src/presentation/routes/admin_routes');
+const doctorRoutes = require('./src/presentation/routes/doctor_routes');
+const patientRoutes = require('./src/presentation/routes/patient_routes');
 const userRoutes = require('./src/presentation/routes/user_routes');
 
 const app = express();
@@ -27,7 +29,9 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api', userRoutes);
+app.use('/api/doctors', doctorRoutes);
+app.use('/api/patients', patientRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is healthy' });

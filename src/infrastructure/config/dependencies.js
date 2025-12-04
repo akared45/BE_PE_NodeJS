@@ -10,11 +10,18 @@ const RefreshTokenUseCase = require("../../application/use_cases/auth/RefreshTok
 const CreateDoctorUseCase = require("../../application/use_cases/admin/CreateDoctorUseCase");
 const UpdateDoctorUseCase = require("../../application/use_cases/admin/UpdateDoctorUseCase");
 const DeleteUserUseCase = require("../../application/use_cases/admin/DeleteUserUseCase");
+// Doctor
+const GetDoctorListUseCase = require("../../application/use_cases/shared/GetDoctorListUseCase");
+const GetPatientListUseCase = require("../../application/use_cases/shared/GetPatientListUseCase");
+const GetUserProfileUseCase = require("../../application/use_cases/shared/GetUserProfileUseCase");
+const GetDoctorDetailUseCase = require("../../application/use_cases/shared/GetDoctorDetailUseCase");
 // Patient
 const UpdatePatientProfileUseCase = require("../../application/use_cases/patient/UpdatePatientProfileUseCase");
+
 // Shared
-const GetUserProfileUseCase = require("../../application/use_cases/shared/GetUserProfileUseCase");
-const GetUserListUseCase = require("../../application/use_cases/shared/GetUserListUseCase");
+const DoctorController = require("../../presentation/controllers/DoctorController");
+const PatientController = require("../../presentation/controllers/PatientController");
+
 // AuthService
 const AuthorizationService = require("../../domain/policies/AuthorizationService");
 //Controller
@@ -23,7 +30,6 @@ const AdminController = require("../../presentation/controllers/AdminController"
 const UserController = require("../../presentation/controllers/UserController");
 //Chat
 const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
-const GetAISuggestionUseCase = require('../../application/use_cases/chat/GetAISuggestionUseCase');
 //Service
 const authenticationService = new BcryptAuthenticationService();
 const tokenService = new JwtTokenService();
@@ -72,12 +78,19 @@ const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({
   authorizationService: authorizationService
 });
 //Shared
-const getUserProfileUseCase = new GetUserProfileUseCase({
+const getDoctorListUseCase = new GetDoctorListUseCase({
+  userRepository: repositories.userRepository
+});
+
+const getDoctorDetailUseCase = new GetDoctorDetailUseCase({
+  userRepository: repositories.userRepository
+});
+
+const getPatientListUseCase = new GetPatientListUseCase({
   userRepository: repositories.userRepository,
   authorizationService: authorizationService
 });
-
-const getUserListUseCase = new GetUserListUseCase({
+const getUserProfileUseCase = new GetUserProfileUseCase({
   userRepository: repositories.userRepository,
   authorizationService: authorizationService
 });
@@ -97,17 +110,26 @@ const adminController = new AdminController({
   updateDoctorUseCase,
   deleteUserUseCase
 });
+//Doctor
+const doctorController = new DoctorController({
+  getDoctorListUseCase,
+  getDoctorDetailUseCase
+});
+
+const patientController = new PatientController({
+  getPatientListUseCase,
+  updatePatientProfileUseCase
+});
 //User
 const userController = new UserController({
   getUserProfileUseCase,
-  getUserListUseCase,
-  updatePatientProfileUseCase
 });
 
 module.exports = {
   authController,
   adminController,
+  doctorController,
+  patientController,
   userController,
-  sendMessageUseCase,
-  getAISuggestionUseCase
+  sendMessageUseCase
 };
