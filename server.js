@@ -12,6 +12,8 @@ const adminRoutes = require('./src/presentation/routes/admin_routes');
 const doctorRoutes = require('./src/presentation/routes/doctor_routes');
 const patientRoutes = require('./src/presentation/routes/patient_routes');
 const userRoutes = require('./src/presentation/routes/user_routes');
+const appointmentRoutes = require('./src/presentation/routes/appointment_routes');
+const aiRoutes = require('./src/presentation/routes/ai_routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +34,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is healthy' });

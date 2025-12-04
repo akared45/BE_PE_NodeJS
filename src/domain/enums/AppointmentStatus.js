@@ -4,5 +4,6 @@ class AppointmentStatus {
   static IN_PROGRESS = 'in_progress';
   static COMPLETED = 'completed';
   static CANCELLED = 'cancelled';
+  static WRONG_SPECIALTY = 'wrong_specialty'
 }
 module.exports = AppointmentStatus;

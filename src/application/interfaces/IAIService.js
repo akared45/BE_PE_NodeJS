@@ -1,8 +1,8 @@
 const { NotImplementedException } = require('../../domain/exceptions');
 
 class IAIService {
-    async analyzeSymptoms(chatHistory, patientProfile) {
-        throw new NotImplementedException('IAIService.analyzeSymptoms');
+    async suggestSpecialty(symptoms, availableSpecialties) {
+        throw new NotImplementedException('IAIService.suggestSpecialty');
     }
 }
 

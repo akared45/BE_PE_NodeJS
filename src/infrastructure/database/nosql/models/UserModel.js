@@ -72,13 +72,31 @@ const PatientSchema = new mongoose.Schema({
 
 const DoctorSchema = new mongoose.Schema({
     licenseNumber: String,
-    specCode: String,
+    specCode: {
+        type: String,
+        ref: 'specializations'
+    },
+    bio: {
+        type: String,
+        default: ''
+    },
     fee: {
         base: Number,
         increment: Number,
         level: String,
         final: Number
     },
+    qualifications: [{
+        degree: String,
+        institution: String,
+        year: Number
+    }],
+    workHistory: [{
+        position: String,
+        place: String,
+        from: Date,
+        to: Date
+    }]
 });
 const PatientModel = UserModel.discriminator(UserType.PATIENT, PatientSchema);
 const DoctorModel = UserModel.discriminator(UserType.DOCTOR, DoctorSchema);

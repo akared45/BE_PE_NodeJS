@@ -4,13 +4,9 @@ class UpdateDoctorRequest {
         this.targetDoctorId = data.targetDoctorId;
         this.bio = data.bio;
         this.avatarUrl = data.avatarUrl;
-        this.fee = data.fee ? {
-            base: Number(data.fee.base),
-            increment: Number(data.fee.increment),
-            level: data.fee.level,
-            final: Number(data.fee.final)
-        } : undefined;
         this.isActive = data.isActive;
+        this.qualifications = data.qualifications;
+        this.workHistory = data.workHistory;
     }
 }
 

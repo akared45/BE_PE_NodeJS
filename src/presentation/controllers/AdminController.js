@@ -1,7 +1,6 @@
 const CreateDoctorRequest = require('../../application/dtos/doctor/CreateDoctorRequest');
 const UpdateDoctorRequest = require('../../application/dtos/doctor/UpdateDoctorRequest');
-const DeleteDoctorRequest = require('../../application/dtos/doctor/DeleteDoctorRequest');
-const DeletePatientRequest = require('../../application/dtos/patient/DeletePatientRequest');
+const DeleteUserRequest = require('../../application/dtos/admin/DeleteUserRequest');
 
 class AdminController {
     constructor({ createDoctorUseCase, updateDoctorUseCase, deleteUserUseCase }) {
@@ -34,10 +33,11 @@ class AdminController {
 
     deleteUser = async (req, res, next) => {
         try {
-            const requestDto = {
+            const requestDto = new DeleteUserRequest({
                 currentUserId: req.user.id,
                 targetUserId: req.params.id
-            };
+            });
+
             const result = await this.deleteUserUseCase.execute(requestDto);
             res.status(200).json(result);
         } catch (error) { next(error); }

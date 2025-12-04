@@ -1,5 +1,4 @@
 const Doctor = require('../../../domain/entities/Doctor');
-const FeeStructure = require('../../../domain/value_objects/FeeStructure');
 const { Action, Resource } = require('../../../domain/enums');
 const { AuthorizationException, BusinessRuleException, NotFoundException } = require('../../../domain/exceptions');
 const DoctorResponse = require('../../dtos/doctor/DoctorResponse');
@@ -34,15 +33,6 @@ class CreateDoctorUseCase {
 
         const passwordHash = await this.authenticationService.hash(request.password);
 
-        let doctorFee = undefined;
-        if (request.fee) {
-            doctorFee = new FeeStructure({
-                base: request.fee.base,
-                increment: request.fee.increment,
-                level: request.fee.level,
-                final: request.fee.final
-            });
-        }
         const newDoctor = new Doctor({
             username: request.username,
             email: request.email,
@@ -53,9 +43,10 @@ class CreateDoctorUseCase {
             },
             licenseNumber: request.licenseNumber,
             specCode: request.specCode,
-            fee: doctorFee,
             schedules: [],
-            unavailableDates: []
+            unavailableDates: [],
+            qualifications: request.qualifications,
+            workHistory: request.workHistory
         });
         const savedDoctor = await this.userRepository.save(newDoctor);
 

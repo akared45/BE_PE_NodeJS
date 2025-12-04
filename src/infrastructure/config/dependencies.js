@@ -1,116 +1,129 @@
 const { repositories } = require("../database/database");
+//--SERVICES--//
 const BcryptAuthenticationService = require("../services/BcryptAuthenticationService");
 const JwtTokenService = require("../services/JwtTokenService");
-//Auth
-const RegisterPatientUseCase = require("../../application/use_cases/auth/RegisterUserUseCase");
-const LoginUserUseCase = require("../../application/use_cases/auth/LoginUserUseCase");
-const LogoutUserUseCase = require("../../application/use_cases/auth/LogoutUserUseCase");
-const RefreshTokenUseCase = require("../../application/use_cases/auth/RefreshTokenUseCase");
-// Admin
-const CreateDoctorUseCase = require("../../application/use_cases/admin/CreateDoctorUseCase");
-const UpdateDoctorUseCase = require("../../application/use_cases/admin/UpdateDoctorUseCase");
-const DeleteUserUseCase = require("../../application/use_cases/admin/DeleteUserUseCase");
-// Doctor
-const GetDoctorListUseCase = require("../../application/use_cases/shared/GetDoctorListUseCase");
-const GetPatientListUseCase = require("../../application/use_cases/shared/GetPatientListUseCase");
-const GetUserProfileUseCase = require("../../application/use_cases/shared/GetUserProfileUseCase");
-const GetDoctorDetailUseCase = require("../../application/use_cases/shared/GetDoctorDetailUseCase");
-// Patient
-const UpdatePatientProfileUseCase = require("../../application/use_cases/patient/UpdatePatientProfileUseCase");
-
-// Shared
-const DoctorController = require("../../presentation/controllers/DoctorController");
-const PatientController = require("../../presentation/controllers/PatientController");
-
-// AuthService
 const AuthorizationService = require("../../domain/policies/AuthorizationService");
-//Controller
-const AuthController = require("../../presentation/controllers/AuthController");
-const AdminController = require("../../presentation/controllers/AdminController");
-const UserController = require("../../presentation/controllers/UserController");
-//Chat
-const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
-//Service
+
 const authenticationService = new BcryptAuthenticationService();
 const tokenService = new JwtTokenService();
 const authorizationService = new AuthorizationService();
+
+const {
+    userRepository,
+    userSessionRepository,
+    appointmentRepository
+} = repositories;
+
+//--USE_CASES--//
 //Auth
-const registerPatientUseCase = new RegisterPatientUseCase({
-  userRepository: repositories.userRepository,
-  authenticationService: authenticationService,
+const RegisterUserUseCase = require("../../application/use_cases/auth/RegisterUserUseCase");
+const LoginUserUseCase = require("../../application/use_cases/auth/LoginUserUseCase");
+const RefreshTokenUseCase = require("../../application/use_cases/auth/RefreshTokenUseCase");
+const LogoutUserUseCase = require("../../application/use_cases/auth/LogoutUserUseCase");
+
+const registerPatientUseCase = new RegisterUserUseCase({
+    userRepository,
+    authenticationService
 });
 
 const loginUserUseCase = new LoginUserUseCase({
-  userRepository: repositories.userRepository,
-  userSessionRepository: repositories.userSessionRepository,
-  authenticationService: authenticationService,
-  tokenService: tokenService,
+    userRepository,
+    userSessionRepository,
+    authenticationService,
+    tokenService
 });
 
 const refreshTokenUseCase = new RefreshTokenUseCase({
-  userRepository: repositories.userRepository,
-  userSessionRepository: repositories.userSessionRepository,
-  tokenService: tokenService,
+    userRepository,
+    userSessionRepository,
+    tokenService
 });
 
 const logoutUserUseCase = new LogoutUserUseCase({
-  userSessionRepository: repositories.userSessionRepository,
+    userSessionRepository
 });
-// Admin
+//Admin module
+const CreateDoctorUseCase = require("../../application/use_cases/admin/CreateDoctorUseCase");
+const UpdateDoctorUseCase = require("../../application/use_cases/admin/UpdateDoctorUseCase");
+const DeleteUserUseCase = require("../../application/use_cases/admin/DeleteUserUseCase");
+
 const createDoctorUseCase = new CreateDoctorUseCase({
-  userRepository: repositories.userRepository,
-  authenticationService: authenticationService,
-  authorizationService: authorizationService
+    userRepository,
+    authenticationService,
+    authorizationService
 });
 
 const updateDoctorUseCase = new UpdateDoctorUseCase({
-  userRepository: repositories.userRepository,
-  authorizationService: authorizationService
+    userRepository,
+    authorizationService
 });
 
 const deleteUserUseCase = new DeleteUserUseCase({
-  userRepository: repositories.userRepository,
-  authorizationService: authorizationService
+    userRepository,
+    authorizationService
 });
-// Patient
-const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({
-  userRepository: repositories.userRepository,
-  authorizationService: authorizationService
-});
-//Shared
-const getDoctorListUseCase = new GetDoctorListUseCase({
-  userRepository: repositories.userRepository
-});
+//Doctor & Patient module
+const GetDoctorListUseCase = require("../../application/use_cases/shared/GetDoctorListUseCase");
+const GetDoctorDetailUseCase = require("../../application/use_cases/shared/GetDoctorDetailUseCase");
+const GetPatientListUseCase = require("../../application/use_cases/shared/GetPatientListUseCase");
+const UpdatePatientProfileUseCase = require("../../application/use_cases/patient/UpdatePatientProfileUseCase");
 
+const getDoctorListUseCase = new GetDoctorListUseCase({
+    userRepository
+});
 const getDoctorDetailUseCase = new GetDoctorDetailUseCase({
-  userRepository: repositories.userRepository
+    userRepository
 });
 
 const getPatientListUseCase = new GetPatientListUseCase({
-  userRepository: repositories.userRepository,
-  authorizationService: authorizationService
+    userRepository,
+    authorizationService
 });
+
+const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({
+    userRepository,
+    authorizationService
+});
+//Shared & Chat
+const GetUserProfileUseCase = require("../../application/use_cases/shared/GetUserProfileUseCase");
+const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
+
 const getUserProfileUseCase = new GetUserProfileUseCase({
-  userRepository: repositories.userRepository,
-  authorizationService: authorizationService
+    userRepository,
+    authorizationService
 });
-//Chat
+
 const sendMessageUseCase = new SendMessageUseCase({
-  appointmentRepository: repositories.appointmentRepository
+    appointmentRepository
 });
+//Booking
+const BookAppointmentUseCase = require("../../application/use_cases/appointment/BookAppointmentUseCase");
+
+const bookAppointmentUseCase = new BookAppointmentUseCase({
+    appointmentRepository,
+    userRepository
+});
+//--CONTROLLER--//
+const AuthController = require("../../presentation/controllers/AuthController");
+const AdminController = require("../../presentation/controllers/AdminController");
+const DoctorController = require("../../presentation/controllers/DoctorController");
+const PatientController = require("../../presentation/controllers/PatientController");
+const UserController = require("../../presentation/controllers/UserController");
+const AppointmentController = require("../../presentation/controllers/AppointmentController");
+
 const authController = new AuthController({
   registerPatientUseCase,
   loginUserUseCase,
   refreshTokenUseCase,
   logoutUserUseCase
 });
-//Admin
+
 const adminController = new AdminController({
   createDoctorUseCase,
   updateDoctorUseCase,
   deleteUserUseCase
 });
-//Doctor
+
 const doctorController = new DoctorController({
   getDoctorListUseCase,
   getDoctorDetailUseCase
@@ -120,16 +133,34 @@ const patientController = new PatientController({
   getPatientListUseCase,
   updatePatientProfileUseCase
 });
-//User
+
 const userController = new UserController({
-  getUserProfileUseCase,
+  getUserProfileUseCase
 });
 
+const appointmentController = new AppointmentController({
+  bookAppointmentUseCase
+});
+
+const OpenAIService = require('../services/OpenAIService');
+const SuggestSpecialtyUseCase = require('../../application/use_cases/ai/SuggestSpecialtyUseCase');
+const AIController = require('../../presentation/controllers/AIController');
+const aiService = new OpenAIService();
+
+const suggestSpecialtyUseCase = new SuggestSpecialtyUseCase({
+  aiService: aiService
+});
+const aiController = new AIController({
+  suggestSpecialtyUseCase: suggestSpecialtyUseCase
+});
+//--EXPORT--//
 module.exports = {
   authController,
   adminController,
   doctorController,
   patientController,
   userController,
+  appointmentController,
+  aiController,
   sendMessageUseCase
 };
