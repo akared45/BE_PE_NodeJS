@@ -49,6 +49,7 @@ const UserSchema = new mongoose.Schema({
     _id: false
 });
 const UserModel = mongoose.model("User", UserSchema);
+
 const PatientSchema = new mongoose.Schema({
     contacts: [{
         type: { type: String },
