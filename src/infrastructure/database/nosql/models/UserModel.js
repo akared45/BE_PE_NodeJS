@@ -43,6 +43,14 @@ const UserSchema = new mongoose.Schema({
         },
         avatarUrl: { type: String, default: null },
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    deletedAt: {
+        type: Date,
+        default: null
+    },
 }, {
     discriminatorKey: 'userType',
     timestamps: true,
@@ -79,12 +87,6 @@ const DoctorSchema = new mongoose.Schema({
     bio: {
         type: String,
         default: ''
-    },
-    fee: {
-        base: Number,
-        increment: Number,
-        level: String,
-        final: Number
     },
     qualifications: [{
         degree: String,

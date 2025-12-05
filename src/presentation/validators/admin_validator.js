@@ -10,13 +10,6 @@ const validate = (schema) => (req, res, next) => {
     next();
 };
 
-const feeSchema = Joi.object({
-    base: Joi.number().min(0).required(),
-    increment: Joi.number().min(0).default(0),
-    level: Joi.string().optional(),
-    final: Joi.number().min(0).required()
-});
-
 const qualificationSchema = Joi.object({
     degree: Joi.string().required(),
     institution: Joi.string().required(),
@@ -38,7 +31,6 @@ const schemas = {
         fullName: Joi.string().required(),
         licenseNumber: Joi.string().required(),
         specCode: Joi.string().required(),
-        fee: feeSchema.optional(),
         qualifications: Joi.array().items(qualificationSchema).optional(),
         workHistory: Joi.array().items(workHistorySchema).optional()
     }),
@@ -47,7 +39,6 @@ const schemas = {
         fullName: Joi.string().optional(),
         licenseNumber: Joi.string().optional(),
         specCode: Joi.string().optional(),
-        fee: feeSchema.optional(),
         isActive: Joi.boolean().optional(),
         qualifications: Joi.array().items(qualificationSchema).optional(),
         workHistory: Joi.array().items(workHistorySchema).optional()

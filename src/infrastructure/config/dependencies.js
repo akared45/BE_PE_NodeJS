@@ -60,6 +60,7 @@ const updateDoctorUseCase = new UpdateDoctorUseCase({
 
 const deleteUserUseCase = new DeleteUserUseCase({
     userRepository,
+    userSessionRepository,
     authorizationService
 });
 //Doctor & Patient module

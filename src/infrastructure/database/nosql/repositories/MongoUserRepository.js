@@ -18,6 +18,8 @@ class MongoUserRepository extends IUserRepository {
             isActive: doc.isActive,
             createdAt: doc.createdAt,
             profile: doc.profile,
+            isDeleted: doc.isDeleted || false,
+            deletedAt: doc.deletedAt || null
         };
 
         switch (doc.userType) {
@@ -30,6 +32,7 @@ class MongoUserRepository extends IUserRepository {
                 });
 
             case UserType.DOCTOR:
+                
                 const specName = (doc.specCode && doc.specCode.name) ? doc.specCode.name : '';
                 const specCodeValue = (doc.specCode && doc.specCode._id) ? doc.specCode._id : doc.specCode;
                 return new Doctor({
@@ -59,6 +62,8 @@ class MongoUserRepository extends IUserRepository {
             isActive: entity.isActive,
             createdAt: entity.createdAt,
             profile: entity.profile,
+            isDeleted: entity.isDeleted,
+            deletedAt: entity.deletedAt,
         };
 
         if (entity.userType === UserType.PATIENT) {
@@ -85,17 +90,28 @@ class MongoUserRepository extends IUserRepository {
     }
 
     async findByEmail(email) {
-        const doc = await UserModel.findOne({ email }).lean();
+        const doc = await UserModel.findOne({
+            email: email,
+            isDeleted: false
+        }).lean();
         return this._toDomain(doc);
     }
 
     async delete(id) {
-        await UserModel.findByIdAndUpdate(id, { isActive: false });
+        await UserModel.findByIdAndUpdate(id, {
+            isDeleted: true,
+            deletedAt: new Date(),
+            isActive: false
+        });
     }
+
     async findAllByUserType(userType, options = {}) {
         const { limit = 10, skip = 0 } = options;
 
-        const docs = await UserModel.find({ userType: userType })
+        const docs = await UserModel.find({
+            userType: userType,
+            isDeleted: false
+        })
             .skip(skip)
             .limit(limit)
             .sort({ createdAt: -1 })

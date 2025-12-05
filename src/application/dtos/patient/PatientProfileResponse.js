@@ -10,6 +10,9 @@ class PatientProfileResponse {
         this.contacts = patientEntity.contacts;
         this.medicalConditions = patientEntity.medicalConditions;
         this.allergies = patientEntity.allergies;
+        this.isActive = patientEntity.isActive;
+        this.isDeleted = patientEntity.isDeleted;
+        this.deletedAt = patientEntity.deletedAt;
     }
 }
 

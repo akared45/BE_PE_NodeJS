@@ -7,6 +7,7 @@ class UpdateDoctorRequest {
         this.isActive = data.isActive;
         this.qualifications = data.qualifications;
         this.workHistory = data.workHistory;
+        this.licenseNumber = data.licenseNumber;
     }
 }
 
