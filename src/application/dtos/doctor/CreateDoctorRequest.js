@@ -9,6 +9,7 @@ class CreateDoctorRequest {
         this.specCode = data.specCode;
         this.qualifications = data.qualifications || [];
         this.workHistory = data.workHistory || [];
+        this.schedules = data.schedules || [];
     }
 }
 module.exports = CreateDoctorRequest;

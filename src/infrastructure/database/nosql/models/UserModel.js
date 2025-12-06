@@ -98,7 +98,14 @@ const DoctorSchema = new mongoose.Schema({
         place: String,
         from: Date,
         to: Date
-    }]
+    }],
+    schedules: [{
+        day: String,
+        start: String,
+        end: String,
+        maxPatients: Number,
+        _id: false
+    }],
 });
 const PatientModel = UserModel.discriminator(UserType.PATIENT, PatientSchema);
 const DoctorModel = UserModel.discriminator(UserType.DOCTOR, DoctorSchema);

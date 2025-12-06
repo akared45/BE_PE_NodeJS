@@ -13,6 +13,7 @@ const doctorRoutes = require('./src/presentation/routes/doctor_routes');
 const patientRoutes = require('./src/presentation/routes/patient_routes');
 const userRoutes = require('./src/presentation/routes/user_routes');
 const appointmentRoutes = require('./src/presentation/routes/appointment_routes');
+const specializationRoutes = require('./src/presentation/routes/specialization_routes');
 const aiRoutes = require('./src/presentation/routes/ai_routes');
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/doctors', doctorRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/specializations', specializationRoutes);
 app.use('/api/ai', aiRoutes);
 
 app.get('/health', (req, res) => {

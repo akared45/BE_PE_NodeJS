@@ -10,13 +10,22 @@ const validate = (schema) => (req, res, next) => {
     next();
 };
 
+const scheduleSchema = Joi.object({
+    day: Joi.string().valid("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday").required(),
+    start: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
+    end: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
+    maxPatients: Joi.number().min(1).default(10)
+});
+
 const qualificationSchema = Joi.object({
+    _id: Joi.any().strip(),
     degree: Joi.string().required(),
     institution: Joi.string().required(),
     year: Joi.number().integer().min(1900).max(new Date().getFullYear())
 });
 
 const workHistorySchema = Joi.object({
+    _id: Joi.any().strip(),
     position: Joi.string().required(),
     place: Joi.string().required(),
     from: Joi.date().required(),
@@ -32,7 +41,8 @@ const schemas = {
         licenseNumber: Joi.string().required(),
         specCode: Joi.string().required(),
         qualifications: Joi.array().items(qualificationSchema).optional(),
-        workHistory: Joi.array().items(workHistorySchema).optional()
+        workHistory: Joi.array().items(workHistorySchema).optional(),
+        schedules: Joi.array().items(scheduleSchema).optional(),
     }),
 
     updateDoctor: Joi.object({
@@ -41,7 +51,8 @@ const schemas = {
         specCode: Joi.string().optional(),
         isActive: Joi.boolean().optional(),
         qualifications: Joi.array().items(qualificationSchema).optional(),
-        workHistory: Joi.array().items(workHistorySchema).optional()
+        workHistory: Joi.array().items(workHistorySchema).optional(),
+        schedules: Joi.array().items(scheduleSchema).optional(),
     })
 };
 

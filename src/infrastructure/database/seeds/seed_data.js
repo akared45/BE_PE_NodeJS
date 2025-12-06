@@ -203,9 +203,9 @@ exports.userSeeds = () => {
             email: `doctor${docNum}@hospital.com`,
             passwordHash: hash("123456"),
             userType: "doctor",
-            isActive: i !== 8, // Doctor 08 không active
+            isActive: i !== 8,
             createdAt: new Date(baseDate.getTime() + i * 2 * 24 * 60 * 60 * 1000),
-            isDeleted: i === 7, // Chỉ doctor 07 bị xóa
+            isDeleted: i === 7,
             deletedAt: i === 7 ? new Date("2024-08-20T09:15:00Z") : null,
             profile: {
                 fullName: `BS. ${i % 2 === 0 ? 'Trần' : 'Lê'} Thị ${String.fromCharCode(65 + (i % 26))}`,
@@ -220,7 +220,6 @@ exports.userSeeds = () => {
             yearsExperience: 10 + i,
             rating: 4.0 + (i * 0.08),
             reviewCount: i * 15,
-            consultationFee: 500000 + (i * 50000),
             schedules: [
                 { 
                     day: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"][i % 5],
@@ -276,19 +275,10 @@ exports.userSeeds = () => {
                     from: new Date(2010, 1, 1),
                     to: null
                 }
-            ],
-            languages: ["Vietnamese", i % 2 === 0 ? "English" : "French"],
-            awards: [
-                {
-                    name: `Giải thưởng ${["Bác sĩ xuất sắc", "Đổi mới y học", "Phục vụ cộng đồng"][i % 3]}`,
-                    year: 2020 - (i % 5),
-                    organization: `Bộ Y tế`
-                }
             ]
         });
     }
 
-    // Tạo 10 admin (nhưng thực tế chỉ cần 1-2, tôi sẽ tạo 3 thôi)
     const admins = [];
     for (let i = 1; i <= 3; i++) {
         admins.push({
@@ -299,7 +289,7 @@ exports.userSeeds = () => {
             userType: "admin",
             isActive: true,
             createdAt: new Date(baseDate.getTime() + i * 3 * 24 * 60 * 60 * 1000),
-            isDeleted: i === 3, // Admin thứ 3 bị xóa
+            isDeleted: i === 3,
             deletedAt: i === 3 ? new Date("2024-10-05T16:45:00Z") : null,
             profile: {
                 fullName: `Quản trị viên ${i}`,

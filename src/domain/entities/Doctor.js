@@ -79,6 +79,7 @@ class Doctor extends User {
       fee: data.fee || this.fee,
       qualifications: data.qualifications || this.qualifications,
       workHistory: data.workHistory || this.workHistory,
+      schedules: data.schedules || this.schedules,
       profile: {
         ...this.profile,
         fullName: data.fullName || this.profile.fullName,
