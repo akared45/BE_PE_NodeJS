@@ -8,12 +8,14 @@ class UpdateDoctorUseCase {
     }
 
     async execute(request) {
-        const { currentUserId, targetDoctorId, fullName, licenseNumber, specCode, fee, isActive } = request;
+        const { 
+            currentUserId, targetDoctorId, 
+            fullName, licenseNumber, specCode, isActive, 
+            qualifications, workHistory, bio 
+        } = request;
 
         const actor = await this.userRepository.findById(currentUserId);
-        if (!actor) {
-            throw new AuthorizationException("User performing update not found");
-        }
+        if (!actor) throw new AuthorizationException("User performing update not found");
 
         const targetDoctor = await this.userRepository.findById(targetDoctorId);
         if (!targetDoctor || !targetDoctor.isDoctor()) {
@@ -21,40 +23,26 @@ class UpdateDoctorUseCase {
         }
 
         const canUpdate = this.authorizationService.can(
-            actor,
-            Action.UPDATE,
-            Resource.DOCTOR,
-            targetDoctor
+            actor, Action.UPDATE, Resource.DOCTOR, targetDoctor
         );
+        if (!canUpdate) throw new AuthorizationException("Permission denied");
 
-        if (!canUpdate) {
-            throw new AuthorizationException("Permission denied");
-        }
-
-        if (fullName !== undefined) {
-            targetDoctor.profile.fullName = fullName;
-        }
-
-        if (licenseNumber !== undefined) {
-            targetDoctor.licenseNumber = licenseNumber;
-        }
-
-        if (specCode !== undefined) {
-            targetDoctor.specCode = specCode;
-        }
-
-        if (isActive !== undefined) {
-            targetDoctor.isActive = isActive;
-        }
-        if (request.qualifications) targetDoctor.qualifications = request.qualifications;
-        if (request.workHistory) targetDoctor.workHistory = request.workHistory;
-
-        await this.userRepository.save(targetDoctor);
+        const updatedDoctor = targetDoctor.updateDetails({
+            fullName,
+            licenseNumber,
+            specCode,
+            isActive,
+            qualifications,
+            workHistory,
+            bio
+        });
+        await this.userRepository.save(updatedDoctor);
 
         return {
             message: "Doctor updated successfully",
-            id: targetDoctor.id.toString()
+            id: updatedDoctor.id.toString()
         };
     }
 }
+
 module.exports = UpdateDoctorUseCase;

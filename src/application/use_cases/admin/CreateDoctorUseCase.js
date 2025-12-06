@@ -43,7 +43,7 @@ class CreateDoctorUseCase {
             },
             licenseNumber: request.licenseNumber,
             specCode: request.specCode,
-            schedules: [],
+            schedules: request.schedules || [],
             unavailableDates: [],
             qualifications: request.qualifications,
             workHistory: request.workHistory

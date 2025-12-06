@@ -9,7 +9,7 @@ class RefreshTokenUseCase {
     this.tokenService = tokenService;
   }
   async execute(request) {
-    
+
     const { refreshToken: oldRefreshToken } = request;
 
     const session = await this.userSessionRepository.findByRefreshToken(oldRefreshToken);
@@ -30,7 +30,7 @@ class RefreshTokenUseCase {
     const user = await this.userRepository.findById(session.userId);
 
     if (!user || !user.isActive) {
-     await this.userSessionRepository.deleteByRefreshToken(oldRefreshToken);
+      await this.userSessionRepository.deleteByRefreshToken(oldRefreshToken);
       throw new AuthorizationException("User not found or inactive");
     }
     const payload = {
@@ -43,9 +43,9 @@ class RefreshTokenUseCase {
 
     const sessionExpiry = this.tokenService.getRefreshTokenExpiry();
     const newSession = new UserSession({
-        userId: user.id.toString(),
-        refreshToken: newRefreshToken,
-        expiresAt: sessionExpiry
+      userId: user.id.toString(),
+      refreshToken: newRefreshToken,
+      expiresAt: sessionExpiry
     });
     await this.userSessionRepository.save(newSession);
     await this.userSessionRepository.deleteByRefreshToken(oldRefreshToken);

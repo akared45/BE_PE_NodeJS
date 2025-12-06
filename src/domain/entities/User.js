@@ -9,7 +9,9 @@ class User {
             dateOfBirth: null,
             gender: Gender.OTHER,
             avatarUrl: null
-        }
+        },
+        isDeleted = false,
+        deletedAt = null
     }) {
         this.id = new UserId(id || require('crypto').randomUUID());
         this.username = username?.trim();
@@ -24,7 +26,8 @@ class User {
             gender: Object.values(Gender).includes(profile.gender) ? profile.gender : Gender.OTHER,
             avatarUrl: profile.avatarUrl || null
         };
-
+        this.isDeleted = Boolean(isDeleted);
+        this.deletedAt = deletedAt ? new Date(deletedAt) : null;
         if (this.constructor === User) {
             Object.freeze(this);
         }
@@ -40,6 +43,9 @@ class User {
     }
     deactivate() {
         return new User({ ...this, isActive: false });
+    }
+    isAvailable() {
+        return this.isActive && !this.isDeleted;
     }
 }
 module.exports = User;

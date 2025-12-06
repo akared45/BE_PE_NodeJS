@@ -43,6 +43,14 @@ const UserSchema = new mongoose.Schema({
         },
         avatarUrl: { type: String, default: null },
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    deletedAt: {
+        type: Date,
+        default: null
+    },
 }, {
     discriminatorKey: 'userType',
     timestamps: true,
@@ -80,12 +88,6 @@ const DoctorSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    fee: {
-        base: Number,
-        increment: Number,
-        level: String,
-        final: Number
-    },
     qualifications: [{
         degree: String,
         institution: String,
@@ -96,7 +98,14 @@ const DoctorSchema = new mongoose.Schema({
         place: String,
         from: Date,
         to: Date
-    }]
+    }],
+    schedules: [{
+        day: String,
+        start: String,
+        end: String,
+        maxPatients: Number,
+        _id: false
+    }],
 });
 const PatientModel = UserModel.discriminator(UserType.PATIENT, PatientSchema);
 const DoctorModel = UserModel.discriminator(UserType.DOCTOR, DoctorSchema);

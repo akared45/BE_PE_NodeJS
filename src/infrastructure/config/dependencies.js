@@ -11,7 +11,8 @@ const authorizationService = new AuthorizationService();
 const {
     userRepository,
     userSessionRepository,
-    appointmentRepository
+    appointmentRepository,
+    specializationRepository
 } = repositories;
 
 //--USE_CASES--//
@@ -60,6 +61,7 @@ const updateDoctorUseCase = new UpdateDoctorUseCase({
 
 const deleteUserUseCase = new DeleteUserUseCase({
     userRepository,
+    userSessionRepository,
     authorizationService
 });
 //Doctor & Patient module
@@ -103,6 +105,13 @@ const bookAppointmentUseCase = new BookAppointmentUseCase({
     appointmentRepository,
     userRepository
 });
+//Spec
+const GetAllSpecializationsUseCase = require("../../application/use_cases/shared/GetAllSpecializationsUseCase");
+
+const getAllSpecializationsUseCase = new GetAllSpecializationsUseCase({
+  specializationRepository
+});
+
 //--CONTROLLER--//
 const AuthController = require("../../presentation/controllers/AuthController");
 const AdminController = require("../../presentation/controllers/AdminController");
@@ -110,6 +119,7 @@ const DoctorController = require("../../presentation/controllers/DoctorControlle
 const PatientController = require("../../presentation/controllers/PatientController");
 const UserController = require("../../presentation/controllers/UserController");
 const AppointmentController = require("../../presentation/controllers/AppointmentController");
+const SpecializationController = require("../../presentation/controllers/SpecializationController");
 
 const authController = new AuthController({
   registerPatientUseCase,
@@ -142,6 +152,10 @@ const appointmentController = new AppointmentController({
   bookAppointmentUseCase
 });
 
+const specializationController = new SpecializationController({
+  getAllSpecializationsUseCase
+});
+
 const OpenAIService = require('../services/OpenAIService');
 const SuggestSpecialtyUseCase = require('../../application/use_cases/ai/SuggestSpecialtyUseCase');
 const AIController = require('../../presentation/controllers/AIController');
@@ -161,6 +175,7 @@ module.exports = {
   patientController,
   userController,
   appointmentController,
+  specializationController,
   aiController,
   sendMessageUseCase
 };

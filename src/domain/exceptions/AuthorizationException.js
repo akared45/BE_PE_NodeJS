@@ -6,3 +6,5 @@ class AuthorizationException extends DomainException {
   }
 }
 module.exports = AuthorizationException;
+
+

@@ -13,6 +13,9 @@ class DoctorProfileResponse {
         this.licenseNumber = doctorEntity.licenseNumber;
         this.qualifications = doctorEntity.qualifications;
         this.workHistory = doctorEntity.workHistory;
+        this.isActive = doctorEntity.isActive;
+        this.isDeleted = doctorEntity.isDeleted;
+        this.deletedAt = doctorEntity.deletedAt;
     }
 }
 module.exports = DoctorProfileResponse;
