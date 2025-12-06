@@ -11,7 +11,7 @@ class UpdateDoctorUseCase {
         const { 
             currentUserId, targetDoctorId, 
             fullName, licenseNumber, specCode, isActive, 
-            qualifications, workHistory, bio 
+            qualifications, workHistory, bio, schedules, avatarUrl
         } = request;
 
         const actor = await this.userRepository.findById(currentUserId);
@@ -34,7 +34,9 @@ class UpdateDoctorUseCase {
             isActive,
             qualifications,
             workHistory,
-            bio
+            bio,
+            schedules,
+            avatarUrl
         });
         await this.userRepository.save(updatedDoctor);
 

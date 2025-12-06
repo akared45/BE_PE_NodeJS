@@ -167,6 +167,13 @@ const suggestSpecialtyUseCase = new SuggestSpecialtyUseCase({
 const aiController = new AIController({
   suggestSpecialtyUseCase: suggestSpecialtyUseCase
 });
+
+//Image
+const LocalDiskStorageService = require('../storage/LocalDiskStorageService');
+const UploadController = require('../../presentation/controllers/UploadController');
+const storageService = new LocalDiskStorageService();
+const uploadController = new UploadController({ storageService });
+
 //--EXPORT--//
 module.exports = {
   authController,
@@ -177,5 +184,6 @@ module.exports = {
   appointmentController,
   specializationController,
   aiController,
-  sendMessageUseCase
+  sendMessageUseCase,
+  uploadController
 };
