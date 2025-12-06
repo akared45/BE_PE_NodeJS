@@ -43,6 +43,7 @@ const schemas = {
         qualifications: Joi.array().items(qualificationSchema).optional(),
         workHistory: Joi.array().items(workHistorySchema).optional(),
         schedules: Joi.array().items(scheduleSchema).optional(),
+        avatarUrl: Joi.string().optional().allow(null, ''),
     }),
 
     updateDoctor: Joi.object({
@@ -53,6 +54,7 @@ const schemas = {
         qualifications: Joi.array().items(qualificationSchema).optional(),
         workHistory: Joi.array().items(workHistorySchema).optional(),
         schedules: Joi.array().items(scheduleSchema).optional(),
+        avatarUrl: Joi.string().optional().allow(null, ''),
     })
 };
 

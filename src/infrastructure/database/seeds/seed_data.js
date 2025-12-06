@@ -144,7 +144,7 @@ exports.userSeeds = () => {
             userType: "patient",
             isActive: true,
             createdAt: new Date(baseDate.getTime() + i * 24 * 60 * 60 * 1000),
-            isDeleted: i === 9, // Chỉ patient 09 bị xóa
+            isDeleted: i === 9, 
             deletedAt: i === 9 ? new Date("2024-06-15T14:30:00Z") : null,
             profile: {
                 fullName: `Nguyễn Văn ${String.fromCharCode(64 + i)}`,

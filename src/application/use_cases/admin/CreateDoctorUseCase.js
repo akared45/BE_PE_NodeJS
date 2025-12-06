@@ -39,7 +39,7 @@ class CreateDoctorUseCase {
             passwordHash: passwordHash,
             profile: {
                 fullName: request.fullName,
-                avatarUrl: null
+                avatarUrl: request.avatarUrl || null
             },
             licenseNumber: request.licenseNumber,
             specCode: request.specCode,

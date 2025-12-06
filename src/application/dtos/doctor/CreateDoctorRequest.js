@@ -10,6 +10,7 @@ class CreateDoctorRequest {
         this.qualifications = data.qualifications || [];
         this.workHistory = data.workHistory || [];
         this.schedules = data.schedules || [];
+        this.avatarUrl = data.avatarUrl;
     }
 }
 module.exports = CreateDoctorRequest;

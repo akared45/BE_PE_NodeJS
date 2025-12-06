@@ -8,9 +8,10 @@ class UpdateDoctorRequest {
         this.qualifications = data.qualifications;
         this.workHistory = data.workHistory;
         this.licenseNumber = data.licenseNumber;
-                this.qualifications = data.qualifications || [];
+        this.qualifications = data.qualifications || [];
         this.workHistory = data.workHistory || [];
         this.schedules = data.schedules || [];
+        this.avatarUrl = data.avatarUrl;
     }
 }
 

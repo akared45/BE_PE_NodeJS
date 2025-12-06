@@ -4,6 +4,8 @@ const http = require('http');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
+
 const { connectDatabase } = require('./src/infrastructure/database/database');
 const { initializeSocket } = require('./src/infrastructure/websocket/socket_server');
 const errorMiddleware = require('./src/presentation/middleware/error_middleware');
@@ -15,14 +17,16 @@ const userRoutes = require('./src/presentation/routes/user_routes');
 const appointmentRoutes = require('./src/presentation/routes/appointment_routes');
 const specializationRoutes = require('./src/presentation/routes/specialization_routes');
 const aiRoutes = require('./src/presentation/routes/ai_routes');
-
+const uploadRoutes = require('./src/presentation/routes/upload_routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const httpServer = http.createServer(app);
 const io = initializeSocket(httpServer);
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true,
@@ -38,11 +42,12 @@ app.use('/api/users', userRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/specializations', specializationRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is healthy' });
 });
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(errorMiddleware);
 const startServer = async () => {
   try {
