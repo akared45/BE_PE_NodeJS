@@ -15,6 +15,8 @@ class Doctor extends User {
     this.bio = data.bio?.trim() || '';
     this.qualifications = data.qualifications || [];
     this.workHistory = data.workHistory || [];
+    this.rating = Number(data.rating) || 0;
+    this.reviewCount = Number(data.reviewCount) || 0;
     this.yearsExperience = this._calculateYearsExperience();
     this.schedules = (data.schedules || []).map(s => new Schedule(s));
     this.unavailableDates = (data.unavailableDates || []).map(d => new UnavailableDate(d));
@@ -76,7 +78,8 @@ class Doctor extends User {
       licenseNumber: data.licenseNumber || this.licenseNumber,
       specCode: data.specCode || this.specCode,
       bio: data.bio || this.bio,
-      fee: data.fee || this.fee,
+      rating: this.rating,
+      reviewCount: this.reviewCount,
       qualifications: data.qualifications || this.qualifications,
       workHistory: data.workHistory || this.workHistory,
       schedules: data.schedules || this.schedules,

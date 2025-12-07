@@ -16,6 +16,7 @@ class DoctorProfileResponse {
         this.isActive = doctorEntity.isActive;
         this.isDeleted = doctorEntity.isDeleted;
         this.deletedAt = doctorEntity.deletedAt;
+        this.schedules = doctorEntity.schedules || [];
     }
 }
 module.exports = DoctorProfileResponse;

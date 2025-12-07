@@ -32,7 +32,6 @@ class MongoUserRepository extends IUserRepository {
                 });
 
             case UserType.DOCTOR:
-                
                 const specName = (doc.specCode && doc.specCode.name) ? doc.specCode.name : '';
                 const specCodeValue = (doc.specCode && doc.specCode._id) ? doc.specCode._id : doc.specCode;
                 return new Doctor({
@@ -41,6 +40,8 @@ class MongoUserRepository extends IUserRepository {
                     specCode: specCodeValue,
                     specializationName: specName,
                     bio: doc.bio || '',
+                    rating: doc.rating || 0,
+                    reviewCount: doc.reviewCount || 0,
                     qualifications: doc.qualifications || [],
                     workHistory: doc.workHistory || [],
                     schedules: doc.schedules || [],
@@ -75,6 +76,8 @@ class MongoUserRepository extends IUserRepository {
             data.licenseNumber = entity.licenseNumber;
             data.specCode = entity.specCode;
             data.bio = entity.bio;
+            data.rating = entity.rating;
+            data.reviewCount = entity.reviewCount;
             data.qualifications = entity.qualifications;
             data.workHistory = entity.workHistory;
             data.schedules = entity.schedules;

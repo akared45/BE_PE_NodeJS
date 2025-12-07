@@ -88,6 +88,14 @@ const DoctorSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    rating: {
+        type: Number,
+        default: 0
+    },
+    reviewCount: {
+        type: Number,
+        default: 0
+    },
     qualifications: [{
         degree: String,
         institution: String,

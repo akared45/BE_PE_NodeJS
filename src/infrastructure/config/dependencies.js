@@ -100,18 +100,21 @@ const sendMessageUseCase = new SendMessageUseCase({
 });
 //Booking
 const BookAppointmentUseCase = require("../../application/use_cases/appointment/BookAppointmentUseCase");
-
 const bookAppointmentUseCase = new BookAppointmentUseCase({
     appointmentRepository,
     userRepository
 });
 //Spec
 const GetAllSpecializationsUseCase = require("../../application/use_cases/shared/GetAllSpecializationsUseCase");
-
 const getAllSpecializationsUseCase = new GetAllSpecializationsUseCase({
   specializationRepository
 });
-
+//Slot
+const GetAvailableSlotsUseCase = require("../../application/use_cases/shared/GetAvailableSlotsUseCase");
+const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase({
+  userRepository,
+  appointmentRepository
+});
 //--CONTROLLER--//
 const AuthController = require("../../presentation/controllers/AuthController");
 const AdminController = require("../../presentation/controllers/AdminController");
@@ -136,7 +139,8 @@ const adminController = new AdminController({
 
 const doctorController = new DoctorController({
   getDoctorListUseCase,
-  getDoctorDetailUseCase
+  getDoctorDetailUseCase,
+  getAvailableSlotsUseCase
 });
 
 const patientController = new PatientController({
@@ -173,6 +177,8 @@ const LocalDiskStorageService = require('../storage/LocalDiskStorageService');
 const UploadController = require('../../presentation/controllers/UploadController');
 const storageService = new LocalDiskStorageService();
 const uploadController = new UploadController({ storageService });
+
+
 
 //--EXPORT--//
 module.exports = {
