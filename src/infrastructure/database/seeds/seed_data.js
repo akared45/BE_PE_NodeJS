@@ -6,54 +6,75 @@ exports.specializations = [
     {
         _id: "CARD",
         name: "Tim mạch",
-        category: "INTERNAL"
+        category: "INTERNAL",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "NEURO",
         name: "Thần kinh",
-        category: "INTERNAL"
+        category: "INTERNAL",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "GASTRO",
         name: "Tiêu hóa",
-        category: "INTERNAL"
+        category: "INTERNAL",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "PULMO",
         name: "Hô hấp",
-        category: "INTERNAL"
+        category: "INTERNAL",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "ENDO",
         name: "Nội tiết",
-        category: "INTERNAL"
+        category: "INTERNAL",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "DERMA",
         name: "Da liễu",
-        category: "EXTERNAL"
+        category: "EXTERNAL",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "PEDIA",
         name: "Nhi khoa",
-        category: "PEDIATRIC"
+        category: "PEDIATRIC",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "OBGYN",
         name: "Sản phụ khoa",
-        category: "WOMEN"
+        category: "WOMEN",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "PSYCH",
         name: "Tâm thần",
-        category: "MENTAL"
+        category: "MENTAL",
+        isDeleted: false,
+        deletedAt: null
     },
     {
         _id: "ORTHO",
         name: "Chỉnh hình",
-        category: "SURGICAL"
+        category: "SURGICAL",
+        isDeleted: false,
+        deletedAt: null
     }
 ];
+
 
 // ================= MEDICATIONS =================
 exports.medications = [
@@ -370,14 +391,7 @@ exports.appointmentSeeds = (function() {
                     isPrimary: true
                 }
             ],
-            vitalSigns: {
-                bloodPressure: `${120 + (i % 20)}/${80 + (i % 10)}`,
-                heartRate: 70 + (i % 20),
-                temperature: 36.5 + (i % 2),
-                respiratoryRate: 16 + (i % 4),
-                oxygenSaturation: 96 + (i % 3),
-                measuredAt: new Date(appointmentDate.getTime() - 30 * 60 * 1000)
-            },
+            
             messages: [
                 {
                     senderId: `PAT${patientNum}`,
