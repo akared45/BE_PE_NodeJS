@@ -4,26 +4,32 @@ class Notification {
   constructor({
     id,
     userId,
-    type = NotificationType.SYSTEM_ALERT,
+    type = NotificationType.SYSTEM,
     title,
     message,
-    read = false,
+    isRead = false,
     createdAt = new Date(),
-    expiresAt = null
+    metadata = {}
   }) {
     this.id = id || require('crypto').randomUUID();
     this.userId = userId;
     this.type = type;
     this.title = title;
     this.message = message;
-    this.read = Boolean(read);
+    this.isRead = Boolean(isRead);
     this.createdAt = createdAt instanceof Date ? createdAt : new Date(createdAt);
-    this.expiresAt = expiresAt ? new Date(expiresAt) : null;
+    this.metadata = metadata; 
+
     Object.freeze(this);
   }
 
+  // Logic nghiệp vụ: Đánh dấu đã đọc
   markAsRead() {
-    return new Notification({ ...this, read: true });
+    return new Notification({
+      ...this,
+      isRead: true
+    });
   }
 }
+
 module.exports = Notification;

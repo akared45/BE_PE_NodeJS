@@ -6,20 +6,16 @@ class DoctorController {
         this.getDoctorDetailUseCase = getDoctorDetailUseCase;
         this.getAvailableSlotsUseCase = getAvailableSlotsUseCase;
     }
+getList = async (req, res, next) => {
+    try {
+        const doctors = await this.getDoctorListUseCase.execute();
+        const response = doctors.map(doc => new DoctorProfileResponse(doc));
+        res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+};
 
-    getList = async (req, res, next) => {
-        try {
-            const { limit, skip } = req.query;
-            const doctors = await this.getDoctorListUseCase.execute({
-                options: {
-                    limit: Number(limit) || 10,
-                    skip: Number(skip) || 0
-                }
-            });
-            const response = doctors.map(doc => new DoctorProfileResponse(doc));
-            res.status(200).json(response);
-        } catch (error) { next(error); }
-    };
 
     getDetail = async (req, res, next) => {
         try {
