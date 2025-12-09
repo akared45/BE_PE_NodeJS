@@ -8,6 +8,7 @@ class AdminController {
         this.updateDoctorUseCase = updateDoctorUseCase;
         this.deleteUserUseCase = deleteUserUseCase;
     }
+    
     createDoctor = async (req, res, next) => {
         try {
             const requestDto = new CreateDoctorRequest({
