@@ -1,24 +1,21 @@
 const DoctorProfileResponse = require('../../application/dtos/doctor/DoctorProfileResponse');
 
 class DoctorController {
-    constructor({ getDoctorListUseCase, getDoctorDetailUseCase }) {
+    constructor({ getDoctorListUseCase, getDoctorDetailUseCase, getAvailableSlotsUseCase }) {
         this.getDoctorListUseCase = getDoctorListUseCase;
         this.getDoctorDetailUseCase = getDoctorDetailUseCase;
+        this.getAvailableSlotsUseCase = getAvailableSlotsUseCase;
     }
+getList = async (req, res, next) => {
+    try {
+        const doctors = await this.getDoctorListUseCase.execute();
+        const response = doctors.map(doc => new DoctorProfileResponse(doc));
+        res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+};
 
-    getList = async (req, res, next) => {
-        try {
-            const { limit, skip } = req.query;
-            const doctors = await this.getDoctorListUseCase.execute({
-                options: {
-                    limit: Number(limit) || 10,
-                    skip: Number(skip) || 0
-                }
-            });
-            const response = doctors.map(doc => new DoctorProfileResponse(doc));
-            res.status(200).json(response);
-        } catch (error) { next(error); }
-    };
 
     getDetail = async (req, res, next) => {
         try {
@@ -26,6 +23,21 @@ class DoctorController {
             const doctorEntity = await this.getDoctorDetailUseCase.execute(id);
             const response = new DoctorProfileResponse(doctorEntity);
             res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    };
+    
+    getSlots = async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const { date } = req.query;
+            if (!date) return res.status(400).json({ message: "Date is required" });
+            const slots = await this.getAvailableSlotsUseCase.execute({
+                doctorId: id,
+                date
+            });
+            res.status(200).json(slots);
         } catch (error) {
             next(error);
         }

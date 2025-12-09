@@ -212,9 +212,10 @@ exports.userSeeds = () => {
                 dateOfBirth: new Date(1980 - (i % 10), (i % 12), 10),
                 gender: i % 3 === 0 ? "Male" : "Female",
                 avatarUrl: `/avatars/doctor${docNum}.jpg`,
-                bio: `Chuyên gia về ${["Tim mạch", "Thần kinh", "Tiêu hóa", "Hô hấp", "Nội tiết",
-                                      "Da liễu", "Nhi khoa", "Sản phụ khoa", "Tâm thần", "Chỉnh hình"][i-1]} với ${10 + i} năm kinh nghiệm.`
+               
             },
+            bio: `Chuyên gia về ${["Tim mạch", "Thần kinh", "Tiêu hóa", "Hô hấp", "Nội tiết",
+                                      "Da liễu", "Nhi khoa", "Sản phụ khoa", "Tâm thần", "Chỉnh hình"][i-1]} với ${10 + i} năm kinh nghiệm.`,
             licenseNumber: `BS-${10000 + i}`,
             specCode: specializations[i-1],
             yearsExperience: 10 + i,

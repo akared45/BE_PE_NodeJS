@@ -100,6 +100,24 @@ class MongoAppointmentRepository extends IAppointmentRepository {
 
         return overlappingDocs.map(d => this._toDomain(d));
     }
+    async getBookedAppointments(doctorId, date) {
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const docs = await AppointmentModel.find({
+            doctorId: doctorId,
+            status: { $ne: 'cancelled' },
+            appointmentDate: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        }).select('appointmentDate durationMinutes').lean();
+
+        return docs;
+    }
 }
 
 module.exports = MongoAppointmentRepository;
