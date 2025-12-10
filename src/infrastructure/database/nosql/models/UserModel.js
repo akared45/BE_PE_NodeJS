@@ -82,7 +82,7 @@ const DoctorSchema = new mongoose.Schema({
     licenseNumber: String,
     specCode: {
         type: String,
-        ref: 'specializations'
+        ref: 'Specialization'
     },
     bio: {
         type: String,

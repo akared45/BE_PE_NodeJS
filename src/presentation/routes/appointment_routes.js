@@ -4,7 +4,10 @@ const { appointmentController } = require('../../infrastructure/config/dependenc
 const { verifyToken, requireRole } = require('../middleware/auth_middleware');
 const { validateBooking } = require('../validators/appointment_validator');
 
-router.use(verifyToken);
+router.use(verifyToken); 
+
 router.post('/', requireRole('patient'), validateBooking, appointmentController.bookAppointment);
+
+router.get('/', appointmentController.getMyAppointments); 
 
 module.exports = router;

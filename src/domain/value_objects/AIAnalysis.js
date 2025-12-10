@@ -1,10 +1,10 @@
 class AIAnalysis {
-    constructor({ suggestion = '', warning = '', confidence = 0 }) {
-        this.suggestion = suggestion;
-        this.warning = warning;
-        this.confidence = Number(confidence) || 0;
+    constructor({ sentiment, intent, keyPhrases, riskLevel }) {
+        this.sentiment = sentiment || 'neutral';
+        this.intent = intent || 'unknown';
+        this.keyPhrases = Array.isArray(keyPhrases) ? keyPhrases : [];
+        this.riskLevel = riskLevel || 'low';
         Object.freeze(this);
     }
 }
-
 module.exports = AIAnalysis;

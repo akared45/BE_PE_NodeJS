@@ -4,27 +4,30 @@ const { repositories } = require("../database/database");
 const BcryptAuthenticationService = require("../services/BcryptAuthenticationService");
 const JwtTokenService = require("../services/JwtTokenService");
 const AuthorizationService = require("../../domain/policies/AuthorizationService");
-const OpenAIService = require('../services/OpenAIService'); // AI Service
-const LocalDiskStorageService = require('../storage/LocalDiskStorageService'); // Storage Service
+const OpenAIService = require('../services/OpenAIService');
+const LocalDiskStorageService = require('../storage/LocalDiskStorageService');
+const SocketService = require('../services/SocketService');
 
 const authenticationService = new BcryptAuthenticationService();
 const tokenService = new JwtTokenService();
 const authorizationService = new AuthorizationService();
 const aiService = new OpenAIService();
 const storageService = new LocalDiskStorageService();
+const socketService = new SocketService(); // Sẽ được setIO từ server.js
 
 // Destructure Repositories
 const {
     userRepository,
     userSessionRepository,
     appointmentRepository,
-    specializationRepository
+    specializationRepository,
+    messageRepository 
 } = repositories;
 
 //--USE_CASES--//
 
 // 1. Auth
-const RegisterUserUseCase = require("../../application/use_cases/auth/RegisterUserUseCase"); // Ensure filename is correct (RegisterUserUseCase vs RegisterPatientUseCase)
+const RegisterUserUseCase = require("../../application/use_cases/auth/RegisterUserUseCase");
 const LoginUserUseCase = require("../../application/use_cases/auth/LoginUserUseCase");
 const RefreshTokenUseCase = require("../../application/use_cases/auth/RefreshTokenUseCase");
 const LogoutUserUseCase = require("../../application/use_cases/auth/LogoutUserUseCase");
@@ -73,77 +76,60 @@ const deleteUserUseCase = new DeleteUserUseCase({
     authorizationService
 });
 
-// 3. Specialization Module (Admin & Shared)
+// 3. Specialization Module
 const GetAllSpecializationsUseCase = require("../../application/use_cases/shared/GetAllSpecializationsUseCase");
 const CreateSpecializationUseCase = require("../../application/use_cases/admin/CreateSpecializationUseCase");
 const UpdateSpecializationUseCase = require("../../application/use_cases/admin/UpdateSpecializationUseCase");
 const DeleteSpecializationUseCase = require("../../application/use_cases/admin/DeleteSpecializationUseCase");
 const GetSpecializationDetailUseCase = require("../../application/use_cases/shared/GetSpecializationDetailUseCase");
 
-const getAllSpecializationsUseCase = new GetAllSpecializationsUseCase({
-    specializationRepository
-});
-
-const createSpecializationUseCase = new CreateSpecializationUseCase({
-    specializationRepository
-});
-
-const updateSpecializationUseCase = new UpdateSpecializationUseCase({
-    specializationRepository
-});
-
-const deleteSpecializationUseCase = new DeleteSpecializationUseCase({
-    specializationRepository
-});
-
-const getSpecializationDetailUseCase = new GetSpecializationDetailUseCase({
-    specializationRepository
-});
+const getAllSpecializationsUseCase = new GetAllSpecializationsUseCase({ specializationRepository });
+const createSpecializationUseCase = new CreateSpecializationUseCase({ specializationRepository });
+const updateSpecializationUseCase = new UpdateSpecializationUseCase({ specializationRepository });
+const deleteSpecializationUseCase = new DeleteSpecializationUseCase({ specializationRepository });
+const getSpecializationDetailUseCase = new GetSpecializationDetailUseCase({ specializationRepository });
 
 // 4. Doctor & Patient Module
 const GetDoctorListUseCase = require("../../application/use_cases/shared/GetDoctorListUseCase");
 const GetDoctorDetailUseCase = require("../../application/use_cases/shared/GetDoctorDetailUseCase");
 const GetPatientListUseCase = require("../../application/use_cases/shared/GetPatientListUseCase");
 const UpdatePatientProfileUseCase = require("../../application/use_cases/patient/UpdatePatientProfileUseCase");
-
-const getDoctorListUseCase = new GetDoctorListUseCase({
-    userRepository
-});
-
-const getDoctorDetailUseCase = new GetDoctorDetailUseCase({
-    userRepository
-});
-
-const getPatientListUseCase = new GetPatientListUseCase({
-    userRepository,
-    authorizationService
-});
-
-const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({
-    userRepository,
-    authorizationService
-});
-
-// 5. Shared & Chat
 const GetUserProfileUseCase = require("../../application/use_cases/shared/GetUserProfileUseCase");
-const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
 
-const getUserProfileUseCase = new GetUserProfileUseCase({
-    userRepository,
-    authorizationService
-});
+const getDoctorListUseCase = new GetDoctorListUseCase({ userRepository });
+const getDoctorDetailUseCase = new GetDoctorDetailUseCase({ userRepository });
+const getPatientListUseCase = new GetPatientListUseCase({ userRepository, authorizationService });
+const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({ userRepository, authorizationService });
+const getUserProfileUseCase = new GetUserProfileUseCase({ userRepository, authorizationService });
+
+// 5. Chat Module
+const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
+const GetChatHistoryUseCase = require('../../application/use_cases/chat/GetChatHistoryUseCase');
 
 const sendMessageUseCase = new SendMessageUseCase({
-    appointmentRepository
+    messageRepository,
+    appointmentRepository, // Đã inject thêm AppointmentRepo để check phòng
+    socketService
+});
+
+const getChatHistoryUseCase = new GetChatHistoryUseCase({
+    messageRepository
 });
 
 // 6. Booking & Slots
 const BookAppointmentUseCase = require("../../application/use_cases/appointment/BookAppointmentUseCase");
+const UpdateAppointmentStatusUseCase = require("../../application/use_cases/appointment/UpdateAppointmentStatusUseCase");
 const GetAvailableSlotsUseCase = require("../../application/use_cases/shared/GetAvailableSlotsUseCase");
+// 👇 MỚI THÊM: Use Case lấy danh sách cuộc hẹn (Danh sách phòng chat)
+const GetMyAppointmentsUseCase = require("../../application/use_cases/appointment/GetMyAppointmentsUseCase"); 
 
 const bookAppointmentUseCase = new BookAppointmentUseCase({
     appointmentRepository,
     userRepository
+});
+
+const updateAppointmentStatusUseCase = new UpdateAppointmentStatusUseCase({
+    appointmentRepository
 });
 
 const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase({
@@ -151,12 +137,15 @@ const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase({
     appointmentRepository
 });
 
+// 👇 KHỞI TẠO UseCase mới
+const getMyAppointmentsUseCase = new GetMyAppointmentsUseCase({
+    appointmentRepository
+});
+
 // 7. AI Module
 const SuggestSpecialtyUseCase = require('../../application/use_cases/ai/SuggestSpecialtyUseCase');
+const suggestSpecialtyUseCase = new SuggestSpecialtyUseCase({ aiService });
 
-const suggestSpecialtyUseCase = new SuggestSpecialtyUseCase({
-    aiService
-});
 
 //--CONTROLLERS--//
 const AuthController = require("../../presentation/controllers/AuthController");
@@ -168,6 +157,7 @@ const AppointmentController = require("../../presentation/controllers/Appointmen
 const SpecializationController = require("../../presentation/controllers/SpecializationController");
 const AIController = require('../../presentation/controllers/AIController');
 const UploadController = require('../../presentation/controllers/UploadController');
+const ChatController = require("../../presentation/controllers/ChatController");
 
 const authController = new AuthController({
     registerPatientUseCase,
@@ -198,7 +188,9 @@ const userController = new UserController({
 });
 
 const appointmentController = new AppointmentController({
-    bookAppointmentUseCase
+    bookAppointmentUseCase,
+    updateAppointmentStatusUseCase,
+    getMyAppointmentsUseCase // 👇 QUAN TRỌNG: Bơm UseCase này vào Controller
 });
 
 const specializationController = new SpecializationController({
@@ -207,6 +199,11 @@ const specializationController = new SpecializationController({
     updateSpecializationUseCase,
     deleteSpecializationUseCase,
     getSpecializationDetailUseCase
+});
+
+const chatController = new ChatController({
+    sendMessageUseCase,
+    getChatHistoryUseCase
 });
 
 const aiController = new AIController({
@@ -228,5 +225,7 @@ module.exports = {
     specializationController,
     aiController,
     uploadController,
-    sendMessageUseCase 
+    chatController,
+    socketService,
+    sendMessageUseCase
 };
