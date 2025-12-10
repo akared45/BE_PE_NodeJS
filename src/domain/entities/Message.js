@@ -1,36 +1,35 @@
+const { MessageType } = require('../enums');
 const AIAnalysis = require('../value_objects/AIAnalysis');
-
-const MessageType = Object.freeze({
-    TEXT: 'text',
-    IMAGE: 'image',
-    FILE: 'file'
-});
 
 class Message {
     constructor({
+        id,
         senderId,
+        appointmentId,
         content = '',
-        type = 'text',
+        type = MessageType.TEXT,
         fileUrl = null,
-        timestamp = new Date(),
         isRead = false,
-        aiAnalysis = null
+        aiAnalysis = null,
+        createdAt = new Date()
     }) {
         if (!senderId) throw new Error("Message must have a senderId");
+        if (!appointmentId) throw new Error("Message must belong to an appointmentId");
         if (type === MessageType.TEXT && !content && !fileUrl) {
-            throw new Error("Message content is required");
+            throw new Error("Message content is required for TEXT type");
         }
 
+        this.id = id;
         this.senderId = senderId;
-        this.content = content ? content.trim() : '';
+        this.appointmentId = appointmentId;
         this.type = Object.values(MessageType).includes(type) ? type : MessageType.TEXT;
+        this.content = content ? content.trim() : '';
         this.fileUrl = fileUrl;
-        this.timestamp = timestamp instanceof Date ? timestamp : new Date(timestamp);
         this.isRead = Boolean(isRead);
         this.aiAnalysis = aiAnalysis ? new AIAnalysis(aiAnalysis) : null;
+        this.createdAt = createdAt instanceof Date ? createdAt : new Date(createdAt);
         Object.freeze(this);
     }
 }
 
-Message.Type = MessageType;
 module.exports = Message;

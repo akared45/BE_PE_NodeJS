@@ -7,7 +7,8 @@ const {
   userSeeds,
   appointmentSeeds,
   notificationSeeds,
-  userSessions
+  userSessions,
+  messageSeeds
 } = require('./seed_data');
 
 async function seed() {
@@ -20,6 +21,7 @@ async function seed() {
       { name: 'medications', docs: medications },
       { name: 'users', docs: userSeeds() },
       { name: 'appointments', docs: appointmentSeeds },
+      { name: 'messages', docs: messageSeeds },
       { name: 'notifications', docs: notificationSeeds },
       { name: 'usersessions', docs: userSessions },
     ];

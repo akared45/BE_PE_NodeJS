@@ -1,6 +1,6 @@
 const { AppointmentStatus, AppointmentType } = require('../enums');
-const { Money, SymptomDetail, Prescription } = require('../value_objects');
-const Message = require('./Message');
+const { SymptomDetail, Prescription } = require('../value_objects');
+// Đã xóa Money và DEFAULT_FEE
 
 class Appointment {
   constructor({
@@ -11,48 +11,61 @@ class Appointment {
     appointmentDate,
     durationMinutes = 30,
     status = AppointmentStatus.PENDING,
-    calculatedFee = 0,
     symptoms = '',
     doctorNotes = '',
     createdAt = new Date(),
     symptomDetails = [],
-    prescriptions = [],
-    messages = []
+    prescriptions = []
   }) {
-    this.id = id || require('crypto').randomUUID();
+    if (!patientId) throw new Error("Appointment must have a patient");
+    if (!doctorId) throw new Error("Appointment must have a doctor");
+    if (!appointmentDate) throw new Error("Appointment date is required");
+
+    this.id = id;
     this.patientId = patientId;
     this.doctorId = doctorId;
     this.type = type;
     this.appointmentDate = new Date(appointmentDate);
     this.durationMinutes = Number(durationMinutes);
     this.status = status;
-    this.calculatedFee = calculatedFee instanceof Money ? calculatedFee : new Money(Number(calculatedFee));
     this.symptoms = symptoms?.trim() || '';
     this.doctorNotes = doctorNotes?.trim() || '';
     this.createdAt = createdAt instanceof Date ? createdAt : new Date(createdAt);
-    this.symptomDetails = symptomDetails.map(s => new SymptomDetail(s));
-    this.prescriptions = prescriptions.map(p => new Prescription(p));
-    this.messages = (messages || []).map(m => m instanceof Message ? m : new Message(m));
+    this.symptomDetails = (symptomDetails || []).map(s => new SymptomDetail(s));
+    this.prescriptions = (prescriptions || []).map(p => new Prescription(p));
     Object.freeze(this);
   }
 
-  hasParticipant(userId) {
-    return this.patientId === userId || this.doctorId === userId;
+  isConfirmed() {
+    return this.status === AppointmentStatus.CONFIRMED;
+  }
+
+  canBeCancelled() {
+    return this.status === AppointmentStatus.PENDING || this.status === AppointmentStatus.CONFIRMED;
   }
 
   confirm() {
+    if (this.status !== AppointmentStatus.PENDING) {
+      throw new Error("Only pending appointments can be confirmed");
+    }
     return new Appointment({ ...this, status: AppointmentStatus.CONFIRMED });
   }
 
   cancel(reason) {
+    if (!this.canBeCancelled()) {
+      throw new Error("Cannot cancel this appointment");
+    }
     return new Appointment({
       ...this,
       status: AppointmentStatus.CANCELLED,
       doctorNotes: reason ? `Cancelled: ${reason}` : this.doctorNotes
     });
   }
-  
+
   complete(notes = '', prescriptions = []) {
+    if (this.status !== AppointmentStatus.CONFIRMED && this.status !== AppointmentStatus.IN_PROGRESS) {
+      throw new Error("Appointment must be confirmed or in-progress to complete");
+    }
     return new Appointment({
       ...this,
       status: AppointmentStatus.COMPLETED,
@@ -61,20 +74,9 @@ class Appointment {
     });
   }
 
-  addMessage({ senderId, content, type = 'text', fileUrl = null, aiAnalysis = null }) {
-    const newMsg = new Message({
-      senderId,
-      type,
-      content,
-      fileUrl,
-      aiAnalysis,
-      timestamp: new Date()
-    });
-
-    return new Appointment({
-      ...this,
-      messages: [...this.messages, newMsg]
-    });
+  hasParticipant(userId) {
+    return String(this.patientId) === String(userId) ||
+      String(this.doctorId) === String(userId);
   }
 }
 

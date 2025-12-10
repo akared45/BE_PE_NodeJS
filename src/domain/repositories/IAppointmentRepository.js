@@ -1,20 +1,21 @@
 const { NotImplementedException } = require('../exceptions');
 
 class IAppointmentRepository {
-    async addMessage(appointmentId, messageEntity) {
-        throw new NotImplementedException('addMessage');
+    async save(appointmentEntity) {
+        throw new NotImplementedException();
     }
 
-    async findById(appointmentId) {
-        throw new NotImplementedException('findById');
+    async findById(id) {
+        throw new NotImplementedException();
     }
 
-    async save(appointment) {
-        throw new NotImplementedException('save');
+    async update(appointmentEntity) {
+        throw new NotImplementedException();
     }
 
     async findOverlapping(doctorId, startTime, endTime) {
-        throw new NotImplementedException('findOverlapping');
+        throw new NotImplementedException();
     }
 }
+
 module.exports = IAppointmentRepository;

@@ -1,31 +1,44 @@
 const Message = require('../../../domain/entities/Message');
-const { AuthorizationException, NotFoundException } = require('../../../domain/exceptions');
 const MessageResponse = require('../../dtos/chat/MessageResponse');
+const { NotFoundException, AuthorizationException } = require('../../../domain/exceptions'); // Giả sử bạn có file exception
 
 class SendMessageUseCase {
-    constructor({ appointmentRepository }) {
-        this.appointmentRepository = appointmentRepository;
+    constructor({ messageRepository, appointmentRepository, socketService }) {
+        this.messageRepository = messageRepository;
+        this.appointmentRepository = appointmentRepository; 
+        this.socketService = socketService;
     }
 
     async execute(request) {
         const { senderId, appointmentId, content, type, fileUrl } = request;
         const appointment = await this.appointmentRepository.findById(appointmentId);
+
         if (!appointment) {
-            throw new NotFoundException("Appointment not found");
+            throw new Error(`Appointment (Room) ${appointmentId} not found`);
+        }
+        if (!appointment.hasParticipant(senderId)) {
+            throw new Error("User is not a participant in this appointment");
+        }
+        if (appointment.status === 'cancelled' || appointment.status === 'pending') {
+            throw new Error("Cannot chat in this appointment status");
         }
 
-        if (!appointment.hasParticipant(senderId)) {
-            throw new AuthorizationException("You are not a participant of this appointment");
-        }
-        const newMessage = new Message({
+        const messageEntity = new Message({
             senderId,
+            appointmentId,
             content,
             type,
-            fileUrl,
-            timestamp: new Date()
+            fileUrl
         });
-        await this.appointmentRepository.addMessage(appointmentId, newMessage);
-        return new MessageResponse(newMessage);
+
+        const savedMessage = await this.messageRepository.save(messageEntity);
+        const response = new MessageResponse(savedMessage);
+
+        if (this.socketService) {
+            this.socketService.sendMessageToRoom(appointmentId, response);
+        }
+
+        return response;
     }
 }
 

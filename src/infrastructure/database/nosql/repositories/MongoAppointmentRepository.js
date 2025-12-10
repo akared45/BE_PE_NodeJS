@@ -1,123 +1,92 @@
 const IAppointmentRepository = require('../../../../domain/repositories/IAppointmentRepository');
 const AppointmentModel = require('../models/AppointmentModel');
 const Appointment = require('../../../../domain/entities/Appointment');
-const Message = require('../../../../domain/entities/Message');
-const Money = require('../../../../domain/value_objects/Money');
 
 class MongoAppointmentRepository extends IAppointmentRepository {
     _toDomain(doc) {
         if (!doc) return null;
+        const pId = doc.patientId?._id ? doc.patientId._id.toString() : doc.patientId;
+        const dId = doc.doctorId?._id ? doc.doctorId._id.toString() : doc.doctorId;
+
         return new Appointment({
-            id: doc._id,
-            patientId: doc.patientId,
-            doctorId: doc.doctorId,
+            id: doc._id.toString(),
+            patientId: pId,
+            doctorId: dId,
             type: doc.type,
             appointmentDate: doc.appointmentDate,
             durationMinutes: doc.durationMinutes,
             status: doc.status,
-            calculatedFee: new Money(doc.calculatedFee),
             symptoms: doc.symptoms,
             doctorNotes: doc.doctorNotes,
             createdAt: doc.createdAt,
-            messages: (doc.messages || []).map(m => new Message(m)),
-            symptomDetails: doc.symptomDetails || [],
-            prescriptions: doc.prescriptions || [],
+            symptomDetails: doc.symptomDetails,
+            prescriptions: doc.prescriptions
         });
-    }
-
-    _toPersistence(entity) {
-        return {
-            _id: entity.id.toString(),
-            patientId: entity.patientId,
-            doctorId: entity.doctorId,
-            type: entity.type,
-            appointmentDate: entity.appointmentDate,
-            durationMinutes: entity.durationMinutes,
-            status: entity.status,
-            calculatedFee: entity.calculatedFee.amount,
-            symptoms: entity.symptoms,
-            doctorNotes: entity.doctorNotes,
-            createdAt: entity.createdAt,
-            messages: entity.messages,
-            symptomDetails: entity.symptomDetails,
-            prescriptions: entity.prescriptions
-
-        };
-    }
-
-    async save(appointmentEntity) {
-        const data = this._toPersistence(appointmentEntity);
-        const updatedDoc = await AppointmentModel.findByIdAndUpdate(
-            data._id,
-            data,
-            { upsert: true, new: true }
-        ).lean();
-        return this._toDomain(updatedDoc);
     }
 
     async findById(id) {
         const doc = await AppointmentModel.findById(id).lean();
+        if (!doc) return null;
         return this._toDomain(doc);
     }
 
-    async addMessage(appointmentId, messageEntity) {
-        const messageData = {
-            senderId: messageEntity.senderId,
-            content: messageEntity.content,
-            type: messageEntity.type,
-            fileUrl: messageEntity.fileUrl,
-            timestamp: messageEntity.timestamp,
-            read: messageEntity.isRead,
-            aiAnalysis: messageEntity.aiAnalysis ? {
-                suggestion: messageEntity.aiAnalysis.suggestion,
-                warning: messageEntity.aiAnalysis.warning,
-                confidence: messageEntity.aiAnalysis.confidence
-            } : null
+    async findByUserId(userId) {
+        const docs = await AppointmentModel.find({
+            $or: [
+                { patientId: userId },
+                { doctorId: userId }
+            ]
+        })
+            .sort({ appointmentDate: -1 })
+            .populate('patientId', 'name username profile avatar')
+            .populate('doctorId', 'name username profile avatar')
+            .lean();
+        return docs.map(doc => {
+            const getDisplayName = (u) => {
+                if (!u) return "Unknown";
+                if (u.name) return u.name;
+                if (u.profile?.fullName) return u.profile.fullName;
+                return u.username || "Unknown";
+            };
+
+            return {
+                id: doc._id.toString(),
+                status: doc.status,
+                appointmentDate: doc.appointmentDate,
+                symptoms: doc.symptoms,
+                patientId: doc.patientId?._id || doc.patientId,
+                patientName: getDisplayName(doc.patientId),
+                doctorId: doc.doctorId?._id || doc.doctorId,
+                doctorName: getDisplayName(doc.doctorId),
+            };
+        });
+    }
+
+    async save(appointment) {
+        const persistenceData = {
+            _id: appointment.id,
+            patientId: appointment.patientId,
+            doctorId: appointment.doctorId,
+            status: appointment.status,
+            type: appointment.type,
+            appointmentDate: appointment.appointmentDate,
+            durationMinutes: appointment.durationMinutes,
+            symptoms: appointment.symptoms,
+            doctorNotes: appointment.doctorNotes,
+            symptomDetails: appointment.symptomDetails,
+            prescriptions: appointment.prescriptions
         };
-        await AppointmentModel.findByIdAndUpdate(appointmentId, {
-            $push: { messages: messageData }
-        });
+
+        await AppointmentModel.findByIdAndUpdate(
+            appointment.id,
+            persistenceData,
+            { upsert: true, new: true }
+        );
+
+        return appointment;
     }
 
-    async findOverlapping(doctorId, newStart, newEnd) {
-        const startOfDay = new Date(newStart);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(newStart);
-        endOfDay.setHours(23, 59, 59, 999);
-        const docs = await AppointmentModel.find({
-            doctorId: doctorId,
-            status: { $ne: 'cancelled' },
-            appointmentDate: {
-                $gte: startOfDay,
-                $lte: endOfDay
-            }
-        }).lean();
-        const overlappingDocs = docs.filter(doc => {
-            const existingStart = new Date(doc.appointmentDate);
-            const existingEnd = new Date(existingStart.getTime() + (doc.durationMinutes || 30) * 60000);
-            return (existingStart < newEnd && existingEnd > newStart);
-        });
 
-        return overlappingDocs.map(d => this._toDomain(d));
-    }
-    async getBookedAppointments(doctorId, date) {
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        const docs = await AppointmentModel.find({
-            doctorId: doctorId,
-            status: { $ne: 'cancelled' },
-            appointmentDate: {
-                $gte: startOfDay,
-                $lte: endOfDay
-            }
-        }).select('appointmentDate durationMinutes').lean();
-
-        return docs;
-    }
 }
 
 module.exports = MongoAppointmentRepository;

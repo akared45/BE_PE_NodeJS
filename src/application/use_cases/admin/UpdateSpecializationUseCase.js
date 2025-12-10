@@ -5,15 +5,16 @@ class UpdateSpecializationUseCase {
         this.specializationRepository = specializationRepository;
     }
 
-    async execute(code, request) {
+    async execute(request) {
+        const { code, name, category } = request;
         const existingSpec = await this.specializationRepository.findById(code);
         if (!existingSpec) {
             throw new NotFoundException(`Specialization '${code}'`);
         }
 
         const updatedSpec = existingSpec.update({
-            name: request.name,
-            category: request.category
+            name: name,
+            category: category
         });
 
         await this.specializationRepository.update(updatedSpec);

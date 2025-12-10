@@ -1,10 +1,10 @@
 class BookAppointmentRequest {
-    constructor(data) {
-        this.patientId = data.patientId;
-        this.doctorId = data.doctorId;
-        this.appointmentDate = data.appointmentDate;
-        this.symptoms = data.symptoms;
-        this.notes = data.notes;
-    }
+  constructor({ patientId, doctorId, appointmentDate, symptoms, type }) {
+    this.patientId = patientId;
+    this.doctorId = doctorId;
+    this.appointmentDate = appointmentDate;
+    this.symptoms = symptoms;
+    this.type = type;
+  }
 }
 module.exports = BookAppointmentRequest;
