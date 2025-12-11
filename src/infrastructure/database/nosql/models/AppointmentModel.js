@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
-const DEFAULT_FEE = 500000;
+const { AppointmentStatus, AppointmentType } = require('../../../../domain/enums');
 const AppointmentSchema = new mongoose.Schema({
-    _id: { type: String, required: true },
+    _id: {
+        type: String,
+        required: true
+    },
+
     patientId: {
         type: String,
         ref: 'User',
@@ -18,26 +22,34 @@ const AppointmentSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+
     durationMinutes: {
         type: Number,
         default: 30
     },
 
+    startTime: {
+        type: Date,
+        required: true
+    },
+
+    endTime: {
+        type: Date,
+        required: true
+    },
+
     type: {
         type: String,
-        enum: ['video', 'audio', 'chat', 'in_person'],
+        enum: Object.values(AppointmentType),
+        lowercase: true,
         default: 'chat'
     },
 
     status: {
         type: String,
-        enum: ['pending', 'confirmed', 'cancelled', 'completed', 'in_progress'],
+        enum: Object.values(AppointmentStatus),
+        lowercase: true,
         default: 'pending'
-    },
-
-    calculatedFee: {
-        type: Number,
-        default: DEFAULT_FEE 
     },
 
     symptoms: String,
@@ -49,5 +61,6 @@ const AppointmentSchema = new mongoose.Schema({
 }, { timestamps: true, _id: false });
 
 AppointmentSchema.index({ doctorId: 1, appointmentDate: 1 });
+AppointmentSchema.index({ patientId: 1, startTime: -1 });
 
 module.exports = mongoose.model('Appointment', AppointmentSchema);

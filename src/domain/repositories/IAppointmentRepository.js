@@ -16,6 +16,14 @@ class IAppointmentRepository {
     async findOverlapping(doctorId, startTime, endTime) {
         throw new NotImplementedException();
     }
+
+    async findBusySlots(doctorId, date) {
+        throw new Error("ERR_METHOD_NOT_IMPLEMENTED");
+    }
+
+    async getBookedSlots(doctorId, startTime, endTime) {
+        throw new NotImplementedException();
+    }
 }
 
 module.exports = IAppointmentRepository;
