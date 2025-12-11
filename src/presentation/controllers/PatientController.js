@@ -28,9 +28,13 @@ class PatientController {
                 targetPatientId: req.user.id,
                 ...req.body
             });
-
-            const result = await this.updatePatientProfileUseCase.execute(requestDto);
-            res.status(200).json(result);
+            const updatedEntity = await this.updatePatientProfileUseCase.execute(requestDto);
+            const responseDto = new PatientProfileResponse(updatedEntity);
+            res.status(200).json({
+                success: true,
+                message: "Hồ sơ cập nhật thành công.",
+                data: responseDto
+            });
         } catch (error) { next(error); }
     }
 }
