@@ -1,7 +1,7 @@
 const IMessageRepository = require('../../../../domain/repositories/IMessageRepository');
 const MessageModel = require('../models/MessageModel');
 const Message = require('../../../../domain/entities/Message');
-const { v4: uuidv4 } = require('uuid');
+
 class MongoMessageRepository extends IMessageRepository {
 
     _toDomain(doc) {

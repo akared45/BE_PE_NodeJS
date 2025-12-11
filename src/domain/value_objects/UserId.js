@@ -1,16 +1,26 @@
 class UserId {
-  constructor(value) {
-    if (!value || typeof value !== 'string') {
-      throw new Error('UserId must be a non-empty string');
+  constructor(id) {
+    if (id instanceof UserId) {
+      this.value = id.value;
     }
-    this.value = value;
+
+    else if (typeof id === 'string' && id.length > 0) {
+      this.value = id;
+    }
+    else {
+      throw new Error("UserId must be a non-empty string or a UserId instance");
+    }
+
     Object.freeze(this);
   }
 
-  equals(other) {
-    return other instanceof UserId && this.value === other.value;
+  toString() {
+    return this.value;
   }
 
-  toString() { return this.value; }
+  toJSON() {
+    return this.value;
+  }
 }
+
 module.exports = UserId;
