@@ -95,13 +95,13 @@ const GetDoctorDetailUseCase = require("../../application/use_cases/shared/GetDo
 const GetPatientListUseCase = require("../../application/use_cases/shared/GetPatientListUseCase");
 const UpdatePatientProfileUseCase = require("../../application/use_cases/patient/UpdatePatientProfileUseCase");
 const GetUserProfileUseCase = require("../../application/use_cases/shared/GetUserProfileUseCase");
-
-// [UPDATED] Import UseCase lấy lịch làm việc (file mới viết)
+const GetPatientProfileUseCase = require("../../application/use_cases/patient/GetPatientProfileUseCase");
 const GetDoctorAvailableSlots = require("../../application/use_cases/doctor/GetDoctorAvailableSlots"); 
 
 const getDoctorListUseCase = new GetDoctorListUseCase({ userRepository });
 const getDoctorDetailUseCase = new GetDoctorDetailUseCase({ userRepository });
 const getPatientListUseCase = new GetPatientListUseCase({ userRepository, authorizationService });
+const getPatientProfileUseCase = new GetPatientProfileUseCase({ userRepository, authorizationService });
 const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({ userRepository, authorizationService });
 const getUserProfileUseCase = new GetUserProfileUseCase({ userRepository, authorizationService });
 
@@ -188,7 +188,8 @@ const doctorController = new DoctorController({
 
 const patientController = new PatientController({
     getPatientListUseCase,
-    updatePatientProfileUseCase
+    updatePatientProfileUseCase,
+    getPatientProfileUseCase
 });
 
 const userController = new UserController({

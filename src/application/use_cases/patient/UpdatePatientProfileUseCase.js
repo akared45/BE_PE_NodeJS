@@ -6,14 +6,13 @@ class UpdatePatientProfileUseCase {
         this.userRepository = userRepository;
         this.authorizationService = authorizationService;
     }
-
     async execute(request) {
-        const { currentUserId, targetPatientId, contacts, medicalConditions, allergies } = request;
+        const { currentUserId, targetPatientId, fullName, gender, dateOfBirth, avatarUrl, phone, address, medicalConditions, allergies } = request;
 
         const actor = await this.userRepository.findById(currentUserId);
         const targetPatient = await this.userRepository.findById(targetPatientId);
 
-        if (!targetPatient || !targetPatient.isPatient()) throw new NotFoundException("Patient not found");
+        if (!targetPatient || targetPatient.userType !== 'patient') throw new NotFoundException("Patient not found");
 
         const canUpdate = this.authorizationService.can(
             actor,
@@ -26,31 +25,32 @@ class UpdatePatientProfileUseCase {
             throw new AuthorizationException("You cannot update this profile");
         }
 
-        if (contacts !== undefined) {
-            if (!Array.isArray(contacts)) {
-                throw new Error("Contacts must be provided as an array");
-            }
-            targetPatient.contacts = contacts;
+        let updatedPatient = targetPatient;
+
+        const profilePayload = {};
+        if (fullName !== undefined) profilePayload.fullName = fullName;
+        if (gender !== undefined) profilePayload.gender = gender;
+        if (avatarUrl !== undefined) profilePayload.avatarUrl = avatarUrl;
+        if (dateOfBirth !== undefined) profilePayload.dateOfBirth = dateOfBirth;
+
+        if (Object.keys(profilePayload).length > 0) {
+            updatedPatient = updatedPatient.updateProfile(profilePayload);
         }
 
-        if (medicalConditions !== undefined) {
-            if (!Array.isArray(medicalConditions)) {
-                throw new Error("Medical conditions must be an array");
-            }
-            targetPatient.medicalConditions = medicalConditions;
+        if (phone !== undefined || address !== undefined) {
+            updatedPatient = updatedPatient.updateContactInfo(phone, address);
         }
 
-        if (allergies !== undefined) {
-            if (!Array.isArray(allergies)) {
-                throw new Error("Allergies must be an array");
-            }
-            targetPatient.allergies = allergies;
+        if (medicalConditions !== undefined || allergies !== undefined) {
+            updatedPatient = updatedPatient.updateMedicalHistory(
+                medicalConditions || updatedPatient.medicalConditions,
+                allergies || updatedPatient.allergies
+            );
         }
 
+        await this.userRepository.save(updatedPatient);
 
-        await this.userRepository.save(targetPatient);
-
-        return { message: "Profile updated successfully" };
+        return updatedPatient;
     }
 }
 module.exports = UpdatePatientProfileUseCase;
