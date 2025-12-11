@@ -105,13 +105,11 @@ const getPatientProfileUseCase = new GetPatientProfileUseCase({ userRepository, 
 const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({ userRepository, authorizationService });
 const getUserProfileUseCase = new GetUserProfileUseCase({ userRepository, authorizationService });
 
-// [UPDATED] Khởi tạo UseCase lấy slot (Cần cả 2 repo để lọc lịch đã đặt)
 const getAvailableSlotsUseCase = new GetDoctorAvailableSlots({
     userRepository,
     appointmentRepository
 });
 
-// 5. Chat Module
 const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
 const GetChatHistoryUseCase = require('../../application/use_cases/chat/GetChatHistoryUseCase');
 
@@ -125,13 +123,11 @@ const getChatHistoryUseCase = new GetChatHistoryUseCase({
     messageRepository
 });
 
-// 6. Booking & Slots
-const BookAppointmentUseCase = require("../../application/use_cases/appointment/BookAppointmentUseCase"); // [CHECKED] File này đã update logic timezone
+const BookAppointmentUseCase = require("../../application/use_cases/appointment/BookAppointmentUseCase");
 const UpdateAppointmentStatusUseCase = require("../../application/use_cases/appointment/UpdateAppointmentStatusUseCase");
 const GetMyAppointmentsUseCase = require("../../application/use_cases/appointment/GetMyAppointmentsUseCase"); 
 const GetBusySlotsUseCase = require("../../application/use_cases/appointment/GetBusySlotsUseCase");
 
-// [CHECKED] BookAppointment cần UserRepository để check Timezone của bác sĩ
 const bookAppointmentUseCase = new BookAppointmentUseCase({
     appointmentRepository,
     userRepository 
@@ -153,8 +149,6 @@ const getBusySlotsUseCase = new GetBusySlotsUseCase({
 const SuggestSpecialtyUseCase = require('../../application/use_cases/ai/SuggestSpecialtyUseCase');
 const suggestSpecialtyUseCase = new SuggestSpecialtyUseCase({ aiService });
 
-
-//--CONTROLLERS--//
 const AuthController = require("../../presentation/controllers/AuthController");
 const AdminController = require("../../presentation/controllers/AdminController");
 const DoctorController = require("../../presentation/controllers/DoctorController");
@@ -179,7 +173,6 @@ const adminController = new AdminController({
     deleteUserUseCase
 });
 
-// [UPDATED] DoctorController inject đúng UseCase getAvailableSlotsUseCase
 const doctorController = new DoctorController({
     getDoctorListUseCase,
     getDoctorDetailUseCase,
