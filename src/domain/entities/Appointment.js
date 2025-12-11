@@ -1,13 +1,16 @@
 const { AppointmentStatus, AppointmentType } = require('../enums');
 const { SymptomDetail, Prescription } = require('../value_objects');
-// Đã xóa Money và DEFAULT_FEE
 
 class Appointment {
   constructor({
     id,
     patientId,
+    patientName,
+    patientAvatar,
     doctorId,
-    type = AppointmentType.VIDEO,
+    doctorName,
+    doctorAvatar,
+    type = AppointmentType.CHAT,
     appointmentDate,
     durationMinutes = 30,
     status = AppointmentStatus.PENDING,
@@ -20,13 +23,16 @@ class Appointment {
     if (!patientId) throw new Error("Appointment must have a patient");
     if (!doctorId) throw new Error("Appointment must have a doctor");
     if (!appointmentDate) throw new Error("Appointment date is required");
-
     this.id = id;
     this.patientId = patientId;
     this.doctorId = doctorId;
     this.type = type;
     this.appointmentDate = new Date(appointmentDate);
     this.durationMinutes = Number(durationMinutes);
+    this.patientName = patientName;
+    this.patientAvatar = patientAvatar;
+    this.doctorName = doctorName;
+    this.doctorAvatar = doctorAvatar;
     this.status = status;
     this.symptoms = symptoms?.trim() || '';
     this.doctorNotes = doctorNotes?.trim() || '';

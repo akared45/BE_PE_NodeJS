@@ -13,7 +13,7 @@ const tokenService = new JwtTokenService();
 const authorizationService = new AuthorizationService();
 const aiService = new OpenAIService();
 const storageService = new LocalDiskStorageService();
-const socketService = new SocketService(); // Sẽ được setIO từ server.js
+const socketService = new SocketService(); 
 
 // Destructure Repositories
 const {
@@ -96,11 +96,20 @@ const GetPatientListUseCase = require("../../application/use_cases/shared/GetPat
 const UpdatePatientProfileUseCase = require("../../application/use_cases/patient/UpdatePatientProfileUseCase");
 const GetUserProfileUseCase = require("../../application/use_cases/shared/GetUserProfileUseCase");
 
+// [UPDATED] Import UseCase lấy lịch làm việc (file mới viết)
+const GetDoctorAvailableSlots = require("../../application/use_cases/doctor/GetDoctorAvailableSlots"); 
+
 const getDoctorListUseCase = new GetDoctorListUseCase({ userRepository });
 const getDoctorDetailUseCase = new GetDoctorDetailUseCase({ userRepository });
 const getPatientListUseCase = new GetPatientListUseCase({ userRepository, authorizationService });
 const updatePatientProfileUseCase = new UpdatePatientProfileUseCase({ userRepository, authorizationService });
 const getUserProfileUseCase = new GetUserProfileUseCase({ userRepository, authorizationService });
+
+// [UPDATED] Khởi tạo UseCase lấy slot (Cần cả 2 repo để lọc lịch đã đặt)
+const getAvailableSlotsUseCase = new GetDoctorAvailableSlots({
+    userRepository,
+    appointmentRepository
+});
 
 // 5. Chat Module
 const SendMessageUseCase = require('../../application/use_cases/chat/SendMessageUseCase');
@@ -108,7 +117,7 @@ const GetChatHistoryUseCase = require('../../application/use_cases/chat/GetChatH
 
 const sendMessageUseCase = new SendMessageUseCase({
     messageRepository,
-    appointmentRepository, // Đã inject thêm AppointmentRepo để check phòng
+    appointmentRepository,
     socketService
 });
 
@@ -117,28 +126,26 @@ const getChatHistoryUseCase = new GetChatHistoryUseCase({
 });
 
 // 6. Booking & Slots
-const BookAppointmentUseCase = require("../../application/use_cases/appointment/BookAppointmentUseCase");
+const BookAppointmentUseCase = require("../../application/use_cases/appointment/BookAppointmentUseCase"); // [CHECKED] File này đã update logic timezone
 const UpdateAppointmentStatusUseCase = require("../../application/use_cases/appointment/UpdateAppointmentStatusUseCase");
-const GetAvailableSlotsUseCase = require("../../application/use_cases/shared/GetAvailableSlotsUseCase");
-// 👇 MỚI THÊM: Use Case lấy danh sách cuộc hẹn (Danh sách phòng chat)
 const GetMyAppointmentsUseCase = require("../../application/use_cases/appointment/GetMyAppointmentsUseCase"); 
+const GetBusySlotsUseCase = require("../../application/use_cases/appointment/GetBusySlotsUseCase");
 
+// [CHECKED] BookAppointment cần UserRepository để check Timezone của bác sĩ
 const bookAppointmentUseCase = new BookAppointmentUseCase({
     appointmentRepository,
-    userRepository
+    userRepository 
 });
 
 const updateAppointmentStatusUseCase = new UpdateAppointmentStatusUseCase({
     appointmentRepository
 });
 
-const getAvailableSlotsUseCase = new GetAvailableSlotsUseCase({
-    userRepository,
+const getMyAppointmentsUseCase = new GetMyAppointmentsUseCase({
     appointmentRepository
 });
 
-// 👇 KHỞI TẠO UseCase mới
-const getMyAppointmentsUseCase = new GetMyAppointmentsUseCase({
+const getBusySlotsUseCase = new GetBusySlotsUseCase({
     appointmentRepository
 });
 
@@ -172,10 +179,11 @@ const adminController = new AdminController({
     deleteUserUseCase
 });
 
+// [UPDATED] DoctorController inject đúng UseCase getAvailableSlotsUseCase
 const doctorController = new DoctorController({
     getDoctorListUseCase,
     getDoctorDetailUseCase,
-    getAvailableSlotsUseCase
+    getAvailableSlotsUseCase 
 });
 
 const patientController = new PatientController({
@@ -190,7 +198,8 @@ const userController = new UserController({
 const appointmentController = new AppointmentController({
     bookAppointmentUseCase,
     updateAppointmentStatusUseCase,
-    getMyAppointmentsUseCase // 👇 QUAN TRỌNG: Bơm UseCase này vào Controller
+    getMyAppointmentsUseCase,
+    getBusySlotsUseCase
 });
 
 const specializationController = new SpecializationController({

@@ -42,6 +42,7 @@ class MongoUserRepository extends IUserRepository {
                     bio: doc.bio || '',
                     rating: doc.rating || 0,
                     reviewCount: doc.reviewCount || 0,
+                    timeZone: doc.timeZone,
                     qualifications: doc.qualifications || [],
                     workHistory: doc.workHistory || [],
                     schedules: doc.schedules || [],
@@ -78,6 +79,7 @@ class MongoUserRepository extends IUserRepository {
             data.bio = entity.bio;
             data.rating = entity.rating;
             data.reviewCount = entity.reviewCount;
+            data.timeZone = entity.timeZone;
             data.qualifications = entity.qualifications;
             data.workHistory = entity.workHistory;
             data.schedules = entity.schedules;

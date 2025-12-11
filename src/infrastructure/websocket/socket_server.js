@@ -24,7 +24,7 @@ const initializeSocket = (httpServer, { sendMessageUseCase }) => {
         });
         socket.on("leave_appointment", (appointmentId) => {
             socket.leave(appointmentId);
-            console.log(`👋 User ${user.id} LEFT room ${appointmentId}`);
+            console.log(`User ${user.id} LEFT room ${appointmentId}`);
         });
         socket.on("send_message", async (data) => {
             try {
@@ -38,7 +38,7 @@ const initializeSocket = (httpServer, { sendMessageUseCase }) => {
 
                 io.to(data.appointmentId).emit("receive_message", savedMessage);
 
-                console.log(`✅ Sent socket message to room ${data.appointmentId}`);
+                console.log(`Sent socket message to room ${data.appointmentId}`);
 
             } catch (error) {
                 console.error("Chat Error:", error.message);

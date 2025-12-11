@@ -9,6 +9,7 @@ class Doctor extends User {
       userType: UserType.DOCTOR,
       profile: data.profile
     });
+
     this.licenseNumber = data.licenseNumber;
     this.specCode = data.specCode;
     this.specializationName = data.specializationName || '';
@@ -17,16 +18,15 @@ class Doctor extends User {
     this.workHistory = data.workHistory || [];
     this.rating = Number(data.rating) || 0;
     this.reviewCount = Number(data.reviewCount) || 0;
-    this.yearsExperience = this._calculateYearsExperience();
     this.schedules = (data.schedules || []).map(s => new Schedule(s));
     this.unavailableDates = (data.unavailableDates || []).map(d => new UnavailableDate(d));
+    this.timeZone = data.timeZone || 'Asia/Ho_Chi_Minh';
+    this.yearsExperience = this._calculateYearsExperience();
     Object.freeze(this);
   }
 
   _calculateYearsExperience() {
-    if (!this.workHistory || this.workHistory.length === 0) {
-      return 0;
-    }
+    if (!this.workHistory || this.workHistory.length === 0) return 0;
     let totalMilliseconds = 0;
     const now = new Date();
     this.workHistory.forEach(job => {
@@ -36,53 +36,47 @@ class Doctor extends User {
         totalMilliseconds += (end - start);
       }
     });
+
     const millisecondsPerYear = 1000 * 60 * 60 * 24 * 365.25;
     return Math.floor(totalMilliseconds / millisecondsPerYear);
   }
 
-  isAvailableOn(date) {
-    const d = new Date(date);
-    const dayName = d.toLocaleString('en-US', { weekday: 'long' });
+  isAvailableOn(dateObj) {
+    if (!(dateObj instanceof Date) || isNaN(dateObj)) return false;
+    const dayName = getWeekdayInTimezone(dateObj, this.timeZone);
     const hasSchedule = this.schedules.some(s => s.day === dayName);
-    const isUnavailable = this.unavailableDates.some(u => u.includes(d));
+    const isUnavailable = this.unavailableDates.some(u => u.includes(dateObj));
     return hasSchedule && !isUnavailable;
   }
 
-  isWorkingAt(appointmentDate, durationMinutes) {
-    const vnTimeZone = 'Asia/Ho_Chi_Minh';
-    const dayName = appointmentDate.toLocaleDateString('en-US', {
-      timeZone: vnTimeZone,
-      weekday: 'long'
-    });
+  isWorkingAt(startTime, durationMinutes) {
+    if (!this.isAvailableOn(startTime)) return false;
+    const dayName = getWeekdayInTimezone(startTime, this.timeZone);
     const schedule = this.schedules.find(s => s.day === dayName);
-
-    if (!schedule) {
-      return false;
-    }
-    const options = { timeZone: vnTimeZone, hour12: false, hour: '2-digit', minute: '2-digit' };
-    const bookingStart = appointmentDate.toLocaleTimeString('en-US', options);
-    const endDate = new Date(appointmentDate.getTime() + durationMinutes * 60000);
-    const bookingEnd = endDate.toLocaleTimeString('en-US', options);
-    const isStartOk = bookingStart >= schedule.start;
-    const isEndOk = bookingEnd <= schedule.end;
-    const result = isStartOk && isEndOk;
-
-    return result;
+    if (!schedule) return false;
+    const endTime = new Date(startTime.getTime() + durationMinutes * 60000);
+    const reqStartStr = getTimeStringInTimezone(startTime, this.timeZone);
+    const reqEndStr = getTimeStringInTimezone(endTime, this.timeZone);
+    const scheduleStartMin = timeToMinutes(schedule.start);
+    const scheduleEndMin = timeToMinutes(schedule.end);
+    const reqStartMin = timeToMinutes(reqStartStr);
+    const reqEndMin = timeToMinutes(reqEndStr);
+    if (reqEndMin < reqStartMin) return false;
+    return reqStartMin >= scheduleStartMin && reqEndMin <= scheduleEndMin;
   }
 
   updateDetails(data) {
     return new Doctor({
       ...this,
-      id: this.id.value || this.id.toString(),
+      id: this.id,
       isActive: data.isActive !== undefined ? data.isActive : this.isActive,
       licenseNumber: data.licenseNumber || this.licenseNumber,
       specCode: data.specCode || this.specCode,
       bio: data.bio || this.bio,
-      rating: this.rating,
-      reviewCount: this.reviewCount,
       qualifications: data.qualifications || this.qualifications,
       workHistory: data.workHistory || this.workHistory,
       schedules: data.schedules || this.schedules,
+      timeZone: data.timeZone || this.timeZone,
       profile: {
         ...this.profile,
         fullName: data.fullName || this.profile.fullName,
@@ -90,7 +84,27 @@ class Doctor extends User {
       }
     });
   }
-
 }
 
+function timeToMinutes(timeString) {
+  if (!timeString || typeof timeString !== 'string') return -1;
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function getWeekdayInTimezone(dateObj, timeZone) {
+  return dateObj.toLocaleDateString('en-US', {
+    timeZone: timeZone,
+    weekday: 'long'
+  });
+}
+
+function getTimeStringInTimezone(dateObj, timeZone) {
+  return dateObj.toLocaleTimeString('en-US', {
+    timeZone: timeZone,
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 module.exports = Doctor;

@@ -51,7 +51,7 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-}, {
+}, {    
     discriminatorKey: 'userType',
     timestamps: true,
     _id: false
@@ -96,6 +96,11 @@ const DoctorSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    timeZone: { 
+        type: String, 
+        default: 'Asia/Ho_Chi_Minh'
+    },
+    unavailableDates: [Date],
     qualifications: [{
         degree: String,
         institution: String,
